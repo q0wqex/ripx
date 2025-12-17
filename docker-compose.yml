@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  imagehost:
+    build: .
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./data:/data
+    restart: unless-stopped
+    environment:
+      - GIN_MODE=release
