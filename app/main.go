@@ -5,6 +5,12 @@ import (
 )
 
 func main() {
+	// Создание директории для хранения данных
+	err := ensureDataDir()
+	if err != nil {
+		return
+	}
+	
 	// Настройка маршрутов
 	mux := http.NewServeMux()
 	
