@@ -73,6 +73,22 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
+        .copy-btn {
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: background-color 0.3s;
+        }
+        .copy-btn:hover {
+            background-color: #0b7dda;
+        }
+        .copy-btn.copied {
+            background-color: #4CAF50;
+        }
         .empty-state {
             text-align: center;
             padding: 60px 20px;
@@ -102,6 +118,27 @@
         .empty-link:hover {
             background-color: #45a049;
         }
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 30px;
+            gap: 10px;
+        }
+        .pagination a, .pagination span {
+            padding: 8px 16px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            text-decoration: none;
+            color: #333;
+        }
+        .pagination a:hover {
+            background-color: #f5f5f5;
+        }
+        .pagination .current {
+            background-color: #4CAF50;
+            color: white;
+            border-color: #4CAF50;
+        }
         @media (max-width: 768px) {
             .header {
                 flex-direction: column;
@@ -121,49 +158,91 @@
         <a href="/" class="upload-more">Загрузить еще</a>
     </div>
     
+    {{if .HasImages}}
     <div class="image-grid" id="imageGrid">
-        <!-- Placeholder изображения -->
+        {{range .Images}}
         <div class="image-item">
-            <img src="https://picsum.photos/seed/placeholder1/400/300.jpg" alt="Изображение 1">
+            <img src="/image/{{.Filename}}" alt="{{.Filename}}">
             <div class="image-info">
-                <div class="image-name">example-image-1.jpg</div>
+                <div class="image-name">{{.Filename}}</div>
+                <button class="copy-btn" onclick="copyUrl('{{.Filename}}', this)">Копировать URL</button>
             </div>
         </div>
-        
-        <div class="image-item">
-            <img src="https://picsum.photos/seed/placeholder2/400/300.jpg" alt="Изображение 2">
-            <div class="image-info">
-                <div class="image-name">screenshot-2025.png</div>
-            </div>
-        </div>
-        
-        <div class="image-item">
-            <img src="https://picsum.photos/seed/placeholder3/400/300.jpg" alt="Изображение 3">
-            <div class="image-info">
-                <div class="image-name">photo-vacation.jpg</div>
-            </div>
-        </div>
-        
-        <div class="image-item">
-            <img src="https://picsum.photos/seed/placeholder4/400/300.jpg" alt="Изображение 4">
-            <div class="image-info">
-                <div class="image-name">diagram-project.png</div>
-            </div>
-        </div>
-        
-        <div class="image-item">
-            <img src="https://picsum.photos/seed/placeholder5/400/300.jpg" alt="Изображение 5">
-            <div class="image-info">
-                <div class="image-name">meme-funny.jpg</div>
-            </div>
-        </div>
-        
-        <div class="image-item">
-            <img src="https://picsum.photos/seed/placeholder6/400/300.jpg" alt="Изображение 6">
-            <div class="image-info">
-                <div class="image-name">wallpaper-hd.jpg</div>
-            </div>
-        </div>
+        {{end}}
     </div>
+    {{else}}
+    <div class="empty-state">
+        <div class="empty-icon">📷</div>
+        <div class="empty-text">У вас пока нет загруженных изображений</div>
+        <a href="/" class="empty-link">Загрузить первое изображение</a>
+    </div>
+    {{end}}
+    
+    {{if .HasPagination}}
+    <div class="pagination">
+        {{if gt .CurrentPage 0}}
+        <a href="/album?page={{sub .CurrentPage 1}}">← Предыдущая</a>
+        {{end}}
+        
+        {{$currentPage := .CurrentPage}}
+        {{range $i := iterate .TotalPages}}
+        {{if eq $i $currentPage}}
+        <span class="current">{{add $i 1}}</span>
+        {{else}}
+        <a href="/album?page={{$i}}">{{add $i 1}}</a>
+        {{end}}
+        {{end}}
+        
+        {{if lt .CurrentPage (sub .TotalPages 1)}}
+        <a href="/album?page={{add .CurrentPage 1}}">Следующая →</a>
+        {{end}}
+    </div>
+    {{end}}
+    
+    <script>
+        function copyUrl(filename, button) {
+            const url = window.location.origin + '/image/' + filename;
+            
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(url).then(function() {
+                    // Показываем, что URL скопирован
+                    const originalText = button.textContent;
+                    button.textContent = 'Скопировано!';
+                    button.classList.add('copied');
+                    
+                    // Возвращаем исходный текст через 2 секунды
+                    setTimeout(function() {
+                        button.textContent = originalText;
+                        button.classList.remove('copied');
+                    }, 2000);
+                }).catch(function(err) {
+                    console.error('Не удалось скопировать URL: ', err);
+                });
+            } else {
+                // Fallback для старых браузеров
+                const textArea = document.createElement('textarea');
+                textArea.value = url;
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                
+                try {
+                    document.execCommand('copy');
+                    const originalText = button.textContent;
+                    button.textContent = 'Скопировано!';
+                    button.classList.add('copied');
+                    
+                    setTimeout(function() {
+                        button.textContent = originalText;
+                        button.classList.remove('copied');
+                    }, 2000);
+                } catch (err) {
+                    console.error('Не удалось скопировать URL: ', err);
+                }
+                
+                document.body.removeChild(textArea);
+            }
+        }
+    </script>
 </body>
 </html>

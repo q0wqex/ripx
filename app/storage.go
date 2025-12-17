@@ -141,8 +141,73 @@ func saveImage(file multipart.File, header *multipart.FileHeader, userID string)
 
 // getUserImages возвращает список изображений пользователя
 func getUserImages(userID string) ([]ImageInfo, error) {
-	// Реализация будет добавлена в следующей фазе
-	return nil, nil
+	return getUserImagesPaginated(userID, 0, 0)
+}
+
+// getUserImagesPaginated возвращает список изображений пользователя с пагинацией
+// Если pageSize <= 0, возвращает все изображения
+func getUserImagesPaginated(userID string, page, pageSize int) ([]ImageInfo, error) {
+	userDir := filepath.Join("/data", userID)
+	
+	// Проверяем существование директории
+	if _, err := os.Stat(userDir); os.IsNotExist(err) {
+		return []ImageInfo{}, nil
+	}
+	
+	// Читаем содержимое директории
+	entries, err := os.ReadDir(userDir)
+	if err != nil {
+		return nil, err
+	}
+	
+	var images []ImageInfo
+	for _, entry := range entries {
+		// Пропускаем директории
+		if entry.IsDir() {
+			continue
+		}
+		
+		// Проверяем, что файл является изображением по расширению
+		filename := entry.Name()
+		ext := strings.ToLower(filepath.Ext(filename))
+		if ext != ".jpg" && ext != ".jpeg" && ext != ".png" && ext != ".gif" && ext != ".webp" {
+			continue
+		}
+		
+		// Получаем информацию о файле
+		info, err := entry.Info()
+		if err != nil {
+			continue
+		}
+		
+		// Создаем путь к файлу
+		path := filepath.Join(userDir, filename)
+		
+		// Добавляем в список
+		images = append(images, ImageInfo{
+			Filename: filename,
+			Path:     path,
+			Size:     info.Size(),
+			UserID:   userID,
+		})
+	}
+	
+	// Применяем пагинацию
+	if pageSize > 0 {
+		start := page * pageSize
+		if start >= len(images) {
+			return []ImageInfo{}, nil
+		}
+		
+		end := start + pageSize
+		if end > len(images) {
+			end = len(images)
+		}
+		
+		images = images[start:end]
+	}
+	
+	return images, nil
 }
 
 // deleteImage удаляет изображение

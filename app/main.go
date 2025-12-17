@@ -18,6 +18,7 @@ func main() {
 	mux.HandleFunc("/", indexHandler)
 	mux.HandleFunc("/upload", uploadHandler)
 	mux.HandleFunc("/album", albumHandler)
+	mux.HandleFunc("/image/", imageHandler)
 	
 	// Запуск сервера
 	http.ListenAndServe("0.0.0.0:8000", mux)

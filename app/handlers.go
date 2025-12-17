@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
+	"os"
+	"strconv"
 )
 
 // indexHandler обрабатывает главную страницу
@@ -67,13 +69,126 @@ func albumHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	
+	// Получаем ID сессии из cookie
+	cookie, err := r.Cookie("session_id")
+	var sessionID string
+	if err == nil && cookie.Value != "" {
+		sessionID = cookie.Value
+	}
+	
+	// Получаем параметры пагинации из URL
+	page := 0
+	pageSize := 12 // Фиксированный размер страницы
+	
+	// Парсим параметр page из URL
+	if pageStr := r.URL.Query().Get("page"); pageStr != "" {
+		if p, err := strconv.Atoi(pageStr); err == nil && p >= 0 {
+			page = p
+		}
+	}
+	
+	// Структура для передачи данных в шаблон
+	data := struct {
+		Images []ImageInfo
+		HasImages bool
+		CurrentPage int
+		TotalPages int
+		HasPagination bool
+	}{
+		CurrentPage: page,
+		TotalPages: 0,
+		HasPagination: false,
+	}
+	
+	// Получаем список изображений пользователя
+	if sessionID != "" {
+		// Сначала получаем все изображения для подсчета общего количества
+		allImages, err := getUserImages(sessionID)
+		if err != nil {
+			// В случае ошибки, просто продолжаем с пустым списком
+			allImages = []ImageInfo{}
+		}
+		
+		// Вычисляем общее количество страниц
+		if len(allImages) > 0 {
+			data.TotalPages = (len(allImages) + pageSize - 1) / pageSize
+			data.HasPagination = data.TotalPages > 1
+			
+			// Проверяем, что номер страницы не превышает общее количество страниц
+			if page >= data.TotalPages {
+				page = data.TotalPages - 1
+				if page < 0 {
+					page = 0
+				}
+			}
+			data.CurrentPage = page
+			
+			// Получаем изображения для текущей страницы
+			data.Images, err = getUserImagesPaginated(sessionID, page, pageSize)
+			if err != nil {
+				data.Images = []ImageInfo{}
+			}
+		}
+		
+		data.HasImages = len(data.Images) > 0
+	}
+	
+	// Создаем шаблон с функциями
+	funcMap := template.FuncMap{
+		"add": func(a, b int) int { return a + b },
+		"sub": func(a, b int) int { return a - b },
+		"iterate": func(count int) []int {
+			var items []int
+			for i := 0; i < count; i++ {
+				items = append(items, i)
+			}
+			return items
+		},
+	}
+	
 	// Отображаем страницу альбома
-	tmpl, err := template.ParseFiles("app/templates/album.html")
+	tmpl := template.New("album.html").Funcs(funcMap)
+	tmpl, err = tmpl.ParseFiles("app/templates/album.html")
 	if err != nil {
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
-	tmpl.Execute(w, nil)
+	tmpl.Execute(w, data)
+}
+
+// imageHandler обрабатывает отдачу изображений
+func imageHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "GET" {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	
+	// Получаем имя файла из URL
+	filename := r.URL.Path[len("/image/"):]
+	if filename == "" {
+		http.NotFound(w, r)
+		return
+	}
+	
+	// Получаем ID сессии из cookie
+	cookie, err := r.Cookie("session_id")
+	if err != nil {
+		http.NotFound(w, r)
+		return
+	}
+	sessionID := cookie.Value
+	
+	// Формируем путь к файлу
+	filePath := "/data/" + sessionID + "/" + filename
+	
+	// Проверяем существование файла
+	if _, err := os.Stat(filePath); os.IsNotExist(err) {
+		http.NotFound(w, r)
+		return
+	}
+	
+	// Отдаем файл
+	http.ServeFile(w, r, filePath)
 }
 
 // deleteHandler обрабатывает удаление изображений
