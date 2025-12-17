@@ -97,11 +97,17 @@ func saveImage(file multipart.File, header *multipart.FileHeader, userID string)
 		return nil, fmt.Errorf("invalid image type")
 	}
 	
+	// Создаем директорию пользователя если она не существует
+	err := ensureUserDir(userID)
+	if err != nil {
+		return nil, err
+	}
+	
 	// Генерируем уникальное имя файла
 	filename := generateUniqueFilename(header.Filename, extension)
 	
-	// Путь для сохранения
-	path := filepath.Join("/data", filename)
+	// Путь для сохранения в директории пользователя
+	path := filepath.Join("/data", userID, filename)
 	
 	// Создаем файл для записи
 	dst, err := os.Create(path)
@@ -145,7 +151,38 @@ func deleteImage(filename, userID string) error {
 	return nil
 }
 
+// getSessionID получает или генерирует ID сессии пользователя
+func getSessionID(w http.ResponseWriter, r *http.Request) string {
+	// Проверяем наличие cookie
+	cookie, err := r.Cookie("session_id")
+	if err == nil && cookie.Value != "" {
+		return cookie.Value
+	}
+	
+	// Генерируем новый ID сессии
+	bytes := make([]byte, 16)
+	rand.Read(bytes)
+	sessionID := hex.EncodeToString(bytes)
+	
+	// Устанавливаем cookie
+	http.SetCookie(w, &http.Cookie{
+		Name:     "session_id",
+		Value:    sessionID,
+		Path:     "/",
+		MaxAge:   86400 * 30, // 30 дней
+		HttpOnly: true,
+		SameSite: http.SameSiteLaxMode,
+	})
+	
+	return sessionID
+}
+
 // ensureDataDir создает директорию /data если она не существует
 func ensureDataDir() error {
 	return os.MkdirAll("/data", 0755)
+}
+
+// ensureUserDir создает директорию для пользователя если она не существует
+func ensureUserDir(userID string) error {
+	return os.MkdirAll(filepath.Join("/data", userID), 0755)
 }
