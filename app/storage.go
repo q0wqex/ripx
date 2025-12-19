@@ -293,20 +293,26 @@ func ensureAlbumDir(userID, albumID string) error {
 // getUserAlbums возвращает список альбомов пользователя
 func getUserAlbums(userID string) ([]AlbumInfo, error) {
 	userDir := filepath.Join("/data", userID)
+	fmt.Printf("[DEBUG] getUserAlbums: checking directory %s\n", userDir)
 	
 	// Проверяем существование директории
 	if _, err := os.Stat(userDir); os.IsNotExist(err) {
+		fmt.Printf("[DEBUG] getUserAlbums: directory does not exist\n")
 		return []AlbumInfo{}, nil
 	}
 	
 	// Читаем содержимое директории
 	entries, err := os.ReadDir(userDir)
 	if err != nil {
+		fmt.Printf("[DEBUG] getUserAlbums: error reading directory: %v\n", err)
 		return nil, err
 	}
+	fmt.Printf("[DEBUG] getUserAlbums: found %d entries in directory\n", len(entries))
 	
 	var albums []AlbumInfo
 	for _, entry := range entries {
+		fmt.Printf("[DEBUG] getUserAlbums: processing entry %s, isDir=%v\n", entry.Name(), entry.IsDir())
+		
 		// Нас интересуют только директории (альбомы)
 		if !entry.IsDir() {
 			continue

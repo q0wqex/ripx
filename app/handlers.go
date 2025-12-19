@@ -19,12 +19,18 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
 		// Получаем ID сессии пользователя
 		sessionID := getSessionID(w, r)
+		fmt.Printf("[DEBUG] indexHandler: sessionID = %s\n", sessionID)
 		
 		// Получаем список альбомов пользователя
 		albums, err := getUserAlbums(sessionID)
 		if err != nil {
+			fmt.Printf("[DEBUG] indexHandler: error getting albums: %v\n", err)
 			// В случае ошибки продолжаем с пустым списком
 			albums = []AlbumInfo{}
+		}
+		fmt.Printf("[DEBUG] indexHandler: found %d albums\n", len(albums))
+		for i, album := range albums {
+			fmt.Printf("[DEBUG]   Album %d: ID=%s, Name=%s, ImageCount=%d\n", i, album.ID, album.Name, album.ImageCount)
 		}
 		
 		// Структура для передачи данных в шаблон
@@ -107,6 +113,8 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 
 // albumHandler обрабатывает страницу альбома
 func albumHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Printf("[DEBUG] albumHandler: request received for URL=%s\n", r.URL.String())
+	
 	if r.Method != "GET" {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
@@ -118,13 +126,16 @@ func albumHandler(w http.ResponseWriter, r *http.Request) {
 	if err == nil && cookie.Value != "" {
 		sessionID = cookie.Value
 	}
+	fmt.Printf("[DEBUG] albumHandler: sessionID = %s\n", sessionID)
 	
 	// Получаем album_id из query параметра
 	albumID := r.URL.Query().Get("id")
 	if albumID == "" {
+		fmt.Printf("[DEBUG] albumHandler: album_id is empty\n")
 		http.Error(w, "album_id required", http.StatusBadRequest)
 		return
 	}
+	fmt.Printf("[DEBUG] albumHandler: albumID = %s\n", albumID)
 	
 	// Получаем параметры пагинации из URL
 	page := 0
