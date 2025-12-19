@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"html/template"
+	"log"
 	"net/http"
 	"os"
 	"strconv"
@@ -83,6 +84,8 @@ func albumHandler(w http.ResponseWriter, r *http.Request) {
 	if err == nil && cookie.Value != "" {
 		sessionID = cookie.Value
 	}
+	
+	log.Printf("[DEBUG albumHandler] SessionID: %s (cookie err: %v)", sessionID, err)
 	
 	// Получаем параметры пагинации из URL
 	page := 0
@@ -178,26 +181,37 @@ func imageHandler(w http.ResponseWriter, r *http.Request) {
 	// Получаем имя файла из URL
 	filename := r.URL.Path[len("/image/"):]
 	if filename == "" {
+		log.Printf("[DEBUG imageHandler] Пустое имя файла")
 		http.NotFound(w, r)
 		return
 	}
 	
+	log.Printf("[DEBUG imageHandler] Запрос изображения: filename=%s", filename)
+	
 	// Получаем ID сессии из cookie
 	cookie, err := r.Cookie("session_id")
 	if err != nil {
+		log.Printf("[DEBUG imageHandler] Cookie отсутствует или ошибка: %v", err)
 		http.NotFound(w, r)
 		return
 	}
 	sessionID := cookie.Value
 	
+	log.Printf("[DEBUG imageHandler] SessionID из cookie: %s", sessionID)
+	
 	// Формируем путь к файлу
 	filePath := "/data/" + sessionID + "/" + filename
 	
+	log.Printf("[DEBUG imageHandler] Путь к файлу: %s", filePath)
+	
 	// Проверяем существование файла
 	if _, err := os.Stat(filePath); os.IsNotExist(err) {
+		log.Printf("[DEBUG imageHandler] Файл не найден: %s", filePath)
 		http.NotFound(w, r)
 		return
 	}
+	
+	log.Printf("[DEBUG imageHandler] Файл найден, отправляем клиенту")
 	
 	// Отдаем файл
 	http.ServeFile(w, r, filePath)
