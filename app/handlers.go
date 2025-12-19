@@ -5,7 +5,6 @@ import (
 	"html/template"
 	"net/http"
 	"os"
-	"strconv"
 	"strings"
 )
 
@@ -152,83 +151,30 @@ func albumHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Printf("[DEBUG] albumHandler: albumID = %s\n", albumID)
 	
-	// Получаем параметры пагинации из URL
-	page := 0
-	pageSize := 12 // Фиксированный размер страницы
-	
-	// Парсим параметр page из URL
-	if pageStr := r.URL.Query().Get("page"); pageStr != "" {
-		if p, err := strconv.Atoi(pageStr); err == nil && p >= 0 {
-			page = p
-		}
-	}
-	
 	// Структура для передачи данных в шаблон
 	data := struct {
 		Images []ImageInfo
 		HasImages bool
-		CurrentPage int
-		TotalPages int
-		HasPagination bool
 		SessionID string
 		AlbumID string
 	}{
-		CurrentPage: page,
-		TotalPages: 0,
-		HasPagination: false,
 		SessionID: sessionID,
 		AlbumID: albumID,
 	}
 	
-	// Получаем список изображений пользователя
+	// Получаем все изображения пользователя без пагинации
 	if sessionID != "" {
-		// Сначала получаем все изображения для подсчета общего количества
-		allImages, err := getUserImagesPaginated(sessionID, albumID, 0, 0)
+		images, err := getUserImagesPaginated(sessionID, albumID, 0, 0)
 		if err != nil {
 			// В случае ошибки, просто продолжаем с пустым списком
-			allImages = []ImageInfo{}
+			images = []ImageInfo{}
 		}
-		
-		// Вычисляем общее количество страниц
-		if len(allImages) > 0 {
-			data.TotalPages = (len(allImages) + pageSize - 1) / pageSize
-			data.HasPagination = data.TotalPages > 1
-			
-			// Проверяем, что номер страницы не превышает общее количество страниц
-			if page >= data.TotalPages {
-				page = data.TotalPages - 1
-				if page < 0 {
-					page = 0
-				}
-			}
-			data.CurrentPage = page
-			
-			// Получаем изображения для текущей страницы
-			data.Images, err = getUserImagesPaginated(sessionID, albumID, page, pageSize)
-			if err != nil {
-				data.Images = []ImageInfo{}
-			}
-		}
-		
-		data.HasImages = len(data.Images) > 0
-	}
-	
-	// Создаем шаблон с функциями
-	funcMap := template.FuncMap{
-		"add": func(a, b int) int { return a + b },
-		"sub": func(a, b int) int { return a - b },
-		"iterate": func(count int) []int {
-			var items []int
-			for i := 0; i < count; i++ {
-				items = append(items, i)
-			}
-			return items
-		},
+		data.Images = images
+		data.HasImages = len(images) > 0
 	}
 	
 	// Отображаем страницу альбома
-	tmpl := template.New("album.html").Funcs(funcMap)
-	tmpl, err = tmpl.ParseFiles("templates/album.html")
+	tmpl, err := template.ParseFiles("templates/album.html")
 	if err != nil {
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return

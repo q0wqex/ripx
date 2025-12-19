@@ -10,9 +10,9 @@ body{font-family:Arial,sans-serif;max-width:1200px;margin:0 auto;padding:20px;ba
 h1{color:#333;margin:0}
 .upload-more{display:inline-block;padding:10px 20px;background:#4CAF50;color:white;text-decoration:none;border-radius:4px}
 .upload-more:hover{background:#45a049}
-.image-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:20px}
-.image-item{border:1px solid #ddd;border-radius:8px;overflow:hidden;background:#fff}
-.image-item img{width:100%;height:200px;object-fit:cover;display:block}
+.image-grid{display:flex;flex-direction:column;gap:20px}
+.image-item{border:1px solid #ddd;border-radius:8px;overflow:hidden;background:#fff;display:flex;flex-direction:row;align-items:center}
+.image-item img{width:300px;height:200px;object-fit:cover;display:block;flex-shrink:0}
 .image-info{padding:15px}
 .image-name{font-weight:bold;margin-bottom:5px;color:#333;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .copy-btn{background:#2196F3;color:white;border:none;padding:5px 10px;border-radius:4px;cursor:pointer;font-size:12px}
@@ -23,13 +23,10 @@ h1{color:#333;margin:0}
 .empty-text{font-size:18px;color:#666;margin-bottom:20px}
 .empty-link{display:inline-block;padding:10px 20px;background:#4CAF50;color:white;text-decoration:none;border-radius:4px}
 .empty-link:hover{background:#45a049}
-.pagination{display:flex;justify-content:center;margin-top:30px;gap:10px}
-.pagination a,.pagination span{padding:8px 16px;border:1px solid #ddd;border-radius:4px;text-decoration:none;color:#333}
-.pagination a:hover{background:#f5f5f5}
-.pagination .current{background:#4CAF50;color:white;border-color:#4CAF50}
 @media(max-width:768px){
 .header{flex-direction:column;gap:15px;text-align:center}
-.image-grid{grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:15px}
+.image-item{flex-direction:column}
+.image-item img{width:100%;height:auto;max-height:300px}
 }
 </style>
 </head>
@@ -55,24 +52,6 @@ h1{color:#333;margin:0}
 <div class="empty-icon">📷</div>
 <div class="empty-text">У вас пока нет загруженных изображений</div>
 <a href="/" class="empty-link">Загрузить первое изображение</a>
-</div>
-{{end}}
-{{if .HasPagination}}
-<div class="pagination">
-{{if gt .CurrentPage 0}}
-<a href="/album?page={{sub .CurrentPage 1}}">← Предыдущая</a>
-{{end}}
-{{$currentPage:=.CurrentPage}}
-{{range $i:=iterate .TotalPages}}
-{{if eq $i $currentPage}}
-<span class="current">{{add $i 1}}</span>
-{{else}}
-<a href="/album?page={{$i}}">{{add $i 1}}</a>
-{{end}}
-{{end}}
-{{if lt .CurrentPage (sub .TotalPages 1)}}
-<a href="/album?page={{add .CurrentPage 1}}">Следующая →</a>
-{{end}}
 </div>
 {{end}}
 <script>
