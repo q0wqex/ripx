@@ -19,18 +19,12 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
 		// Получаем ID сессии пользователя
 		sessionID := getSessionID(w, r)
-		fmt.Printf("[DEBUG] indexHandler: sessionID = %s\n", sessionID)
 		
 		// Получаем список альбомов пользователя
 		albums, err := getUserAlbums(sessionID)
 		if err != nil {
-			fmt.Printf("[DEBUG] indexHandler: error getting albums: %v\n", err)
 			// В случае ошибки продолжаем с пустым списком
 			albums = []AlbumInfo{}
-		}
-		fmt.Printf("[DEBUG] indexHandler: found %d albums\n", len(albums))
-		for i, album := range albums {
-			fmt.Printf("[DEBUG]   Album %d: ID=%s, Name=%s, ImageCount=%d\n", i, album.ID, album.Name, album.ImageCount)
 		}
 		
 		// Структура для передачи данных в шаблон
@@ -79,6 +73,17 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	
+	// [DEBUG] Логируем количество файлов в запросе
+	if r.MultipartForm != nil && r.MultipartForm.File != nil {
+		files := r.MultipartForm.File["image"]
+		fmt.Printf("[DEBUG] uploadHandler: получено файлов в запросе: %d\n", len(files))
+		for i, fileHeader := range files {
+			fmt.Printf("[DEBUG] uploadHandler: файл %d: %s (размер: %d байт)\n", i+1, fileHeader.Filename, fileHeader.Size)
+		}
+	} else {
+		fmt.Printf("[DEBUG] uploadHandler: MultipartForm или File = nil\n")
+	}
+	
 	// Получаем album_id из формы
 	albumID := r.FormValue("album_id")
 	
@@ -92,6 +97,9 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 		albumID = newAlbumID
 	}
 	
+	// [DEBUG] Логируем, что используется FormFile (только первый файл)
+	fmt.Printf("[DEBUG] uploadHandler: используется r.FormFile() - обрабатывается только ПЕРВЫЙ файл\n")
+	
 	// Получаем файл из формы
 	file, header, err := r.FormFile("image")
 	if err != nil {
@@ -99,6 +107,8 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer file.Close()
+	
+	fmt.Printf("[DEBUG] uploadHandler: обрабатывается файл: %s\n", header.Filename)
 	
 	// Сохраняем изображение
 	_, err = saveImage(file, header, sessionID, albumID)

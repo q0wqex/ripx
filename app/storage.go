@@ -62,7 +62,6 @@ func generateUniqueFilename(originalFilename string, extension string) string {
 	}
 	
 	filename := randomString + ext
-	fmt.Printf("[DEBUG] Generated filename: %s\n", filename)
 	return filename
 }
 
