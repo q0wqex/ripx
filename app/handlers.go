@@ -73,17 +73,6 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	
-	// [DEBUG] Логируем количество файлов в запросе
-	if r.MultipartForm != nil && r.MultipartForm.File != nil {
-		files := r.MultipartForm.File["image"]
-		fmt.Printf("[DEBUG] uploadHandler: получено файлов в запросе: %d\n", len(files))
-		for i, fileHeader := range files {
-			fmt.Printf("[DEBUG] uploadHandler: файл %d: %s (размер: %d байт)\n", i+1, fileHeader.Filename, fileHeader.Size)
-		}
-	} else {
-		fmt.Printf("[DEBUG] uploadHandler: MultipartForm или File = nil\n")
-	}
-	
 	// Получаем album_id из формы
 	albumID := r.FormValue("album_id")
 	
@@ -97,25 +86,41 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 		albumID = newAlbumID
 	}
 	
-	// [DEBUG] Логируем, что используется FormFile (только первый файл)
-	fmt.Printf("[DEBUG] uploadHandler: используется r.FormFile() - обрабатывается только ПЕРВЫЙ файл\n")
-	
-	// Получаем файл из формы
-	file, header, err := r.FormFile("image")
-	if err != nil {
-		http.Error(w, "Error retrieving file", http.StatusBadRequest)
+	// Проверяем наличие файлов в запросе
+	if r.MultipartForm == nil || r.MultipartForm.File == nil {
+		http.Error(w, "No files in request", http.StatusBadRequest)
 		return
 	}
-	defer file.Close()
 	
-	fmt.Printf("[DEBUG] uploadHandler: обрабатывается файл: %s\n", header.Filename)
-	
-	// Сохраняем изображение
-	_, err = saveImage(file, header, sessionID, albumID)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("Error saving image: %v", err), http.StatusInternalServerError)
+	// Получаем все файлы из формы
+	files := r.MultipartForm.File["image"]
+	if len(files) == 0 {
+		http.Error(w, "No files selected", http.StatusBadRequest)
 		return
 	}
+	
+	// Обрабатываем каждый файл
+	for i, fileHeader := range files {
+		// Открываем файл
+		file, err := fileHeader.Open()
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Error opening file %s: %v", fileHeader.Filename, err), http.StatusInternalServerError)
+			return
+		}
+		
+		// Сохраняем изображение
+		_, err = saveImage(file, fileHeader, sessionID, albumID)
+		file.Close()
+		
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Error saving image %s: %v", fileHeader.Filename, err), http.StatusInternalServerError)
+			return
+		}
+		
+		fmt.Printf("[INFO] uploadHandler: сохранен файл %d/%d: %s\n", i+1, len(files), fileHeader.Filename)
+	}
+	
+	fmt.Printf("[INFO] uploadHandler: успешно загружено файлов: %d\n", len(files))
 	
 	// Перенаправляем на страницу альбома
 	http.Redirect(w, r, "/album?id="+albumID, http.StatusSeeOther)
