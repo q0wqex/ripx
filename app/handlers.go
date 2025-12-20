@@ -272,7 +272,7 @@ func contentHandler(w http.ResponseWriter, r *http.Request) {
 	filename := parts[2]
 
 	// Формируем путь к файлу
-	filePath := "data/" + sessionID + "/" + albumID + "/" + filename
+	filePath := "/data/" + sessionID + "/" + albumID + "/" + filename
 
 	// Проверяем существование файла
 	if _, err := os.Stat(filePath); os.IsNotExist(err) {
