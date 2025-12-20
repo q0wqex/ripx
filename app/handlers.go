@@ -154,15 +154,27 @@ func contentHandler(w http.ResponseWriter, r *http.Request) {
 		sessionID := parts[0]
 		albumID := parts[1]
 		
+		// Получаем ID сессии текущего пользователя
+		currentSessionID := getSessionID(w, r)
+		
+		// Проверяем, является ли текущий пользователь владельцем альбома
+		isOwner := (currentSessionID == sessionID)
+		
+		// Добавляем логирование для диагностики
+		fmt.Printf("[DEBUG] contentHandler: albumID=%s, ownerSessionID=%s, currentSessionID=%s, isOwner=%v\n",
+			albumID, sessionID, currentSessionID, isOwner)
+		
 		// Отображаем страницу альбома
 		data := struct {
 			Images    []ImageInfo
 			HasImages bool
 			SessionID string
 			AlbumID   string
+			IsOwner   bool
 		}{
-			SessionID: sessionID,
+			SessionID: currentSessionID,
 			AlbumID:   albumID,
+			IsOwner:   isOwner,
 		}
 		
 		// Получаем все изображения альбома

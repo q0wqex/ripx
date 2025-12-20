@@ -37,10 +37,12 @@ h1{color:#333;margin:0}
 <h1>Альбом: {{.AlbumID}}</h1>
 <div>
 <a href="/" class="upload-more">На главную</a>
+{{if .IsOwner}}
 <form action="/delete-album" method="POST" style="display:inline;" onsubmit="return confirm('Вы уверены, что хотите удалить весь альбом со всеми изображениями?')">
 <input type="hidden" name="album_id" value="{{.AlbumID}}">
 <button type="submit" class="delete-album-btn">Удалить альбом</button>
 </form>
+{{end}}
 </div>
 </div>
 {{if .HasImages}}
@@ -52,7 +54,9 @@ h1{color:#333;margin:0}
 <div class="image-name">{{.Filename}}</div>
 <div>
 <button class="copy-btn" onclick="copyUrl('{{$.SessionID}}','{{$.AlbumID}}','{{.Filename}}',this)">Копировать URL</button>
+{{if $.IsOwner}}
 <button class="delete-btn" onclick="deleteImage('{{$.SessionID}}','{{$.AlbumID}}','{{.Filename}}',this)">Удалить</button>
+{{end}}
 </div>
 </div>
 </div>
