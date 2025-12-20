@@ -4,22 +4,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ᴘипиᴋᴄ ʀᴇʙᴏʀɴ</title>
+  <title>ᴩиᴨиᴋᴄ ʀᴇʙᴏʀɴ</title>
   <link rel="stylesheet" href="/static/styles.css">
 </head>
 
 <body>
-  <h1>ᴘипиᴋᴄ ʀᴇʙᴏʀɴ</h1>
+  <h1>ᴩиᴨиᴋᴄ ʀᴇʙᴏʀɴ</h1>
   <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-    <p>неубиваемый</p>
-    <button type="button" class="delete-user-btn" onclick="deleteUser()">Удалить профиль</button>
+    <p>жиʙой, дᴀжᴇ ᴋоᴦдᴀ ᴧᴇжиᴛ</p>
+    <button type="button" class="delete-user-btn" onclick="deleteUser()">удᴀᴧиᴛь ᴨᴩоɸиᴧь</button>
   </div>
 
   <div class="upload-container">
     <div class="upload-area" id="uploadArea">
       <div class="upload-icon">📁</div>
-      <div class="upload-text">Перетащите изображения сюда</div>
-      <div class="upload-hint">или нажмите для выбора файлов</div>
+      <div class="upload-text">ᴨᴇᴩᴇᴛᴀщиᴛᴇ изобᴩᴀжᴇния ᴄюдᴀ</div>
+      <div class="upload-hint">иᴧи нᴀжʍиᴛᴇ дᴧя ʙыбоᴩᴀ ɸᴀйᴧоʙ</div>
     </div>
     <form action="/upload" method="post" enctype="multipart/form-data" id="uploadForm">
       <input type="file" name="image" accept="image/*" multiple id="fileInput">
@@ -29,14 +29,14 @@
   <!-- Список существующих альбомов -->
   {{if .HasAlbums}}
   <div class="albums-container">
-    <div class="albums-title">Ваши альбомы</div>
+    <div class="albums-title">ʙᴀɯи ᴀᴧьбоʍы ᴨод нᴀдёжной зᴀщиᴛой (нᴇᴛ)</div>
     <div class="albums-list">
       {{range .Albums}}
       <a href="/{{$.SessionID}}/{{.ID}}" class="album-link" style="text-decoration:none;display:block;">
         <div class="album-item">
           <div style="font-weight:bold;color:#333;">{{.Name}}</div>
-          <div class="album-count">{{.ImageCount}} изображений</div>
-          <div class="album-count">Создан: {{.CreatedAt.Format "02.01.2006 15:04"}}</div>
+          <div class="album-count">{{.ImageCount}} изобᴩᴀжᴇний</div>
+          <div class="album-count">ᴄоздᴀн: {{.CreatedAt.Format "02.01.2006 15:04"}}</div>
         </div>
       </a>
       {{end}}

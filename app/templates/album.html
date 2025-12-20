@@ -4,31 +4,31 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ᴘипиᴋᴄ ʀᴇʙᴏʀɴ</title>
+  <title>ᴩиᴨиᴋᴄ ʀᴇʙᴏʀɴ</title>
   <link rel="stylesheet" href="/static/styles.css">
 </head>
 
 <body>
   <div class="header">
-    <h1>Альбом: {{.AlbumID}}</h1>
+    <h1>ᴀᴧьбоʍ: {{.AlbumID}}</h1>
     <div>
-      <a href="/" class="upload-more">На главную</a>
+      <a href="/" class="upload-more">нᴀ ᴦᴧᴀʙную</a>
       {{if .IsOwner}}
       <form action="/delete-album" method="POST" style="display:inline;"
         onsubmit="return confirm('Вы уверены, что хотите удалить весь альбом со всеми изображениями?')">
         <input type="hidden" name="album_id" value="{{.AlbumID}}">
-        <button type="submit" class="delete-album-btn">Удалить альбом</button>
+        <button type="submit" class="delete-album-btn">удᴀᴧиᴛь ᴀᴧьбоʍ</button>
       </form>
       {{end}}
     </div>
   </div>
-  
+
   {{if .IsOwner}}
   <div class="upload-container">
     <div class="upload-area" id="uploadArea">
       <div class="upload-icon">📁</div>
-      <div class="upload-text">Перетащите изображения сюда</div>
-      <div class="upload-hint">или нажмите для выбора файлов</div>
+      <div class="upload-text">ᴨᴇᴩᴇᴛᴀщиᴛᴇ изобᴩᴀжᴇния ᴄюдᴀ</div>
+      <div class="upload-hint">иᴧи нᴀжʍиᴛᴇ дᴧя ʙыбоᴩᴀ ɸᴀйᴧоʙ</div>
     </div>
     <form action="/upload" method="post" enctype="multipart/form-data" id="imageUploadForm">
       <input type="hidden" name="album_id" value="{{.AlbumID}}">
@@ -45,10 +45,10 @@
         <div class="image-name">{{.Filename}}</div>
         <div>
           <button class="copy-btn"
-            onclick="copyUrl('{{$.OwnerSessionID}}','{{$.AlbumID}}','{{.Filename}}',this)">Копировать URL</button>
+            onclick="copyUrl('{{$.OwnerSessionID}}','{{$.AlbumID}}','{{.Filename}}',this)">ᴋоᴨиᴩоʙᴀᴛь ᴜʀʟ</button>
           {{if $.IsOwner}}
           <button class="delete-btn"
-            onclick="deleteImage('{{$.SessionID}}','{{$.AlbumID}}','{{.Filename}}',this)">Удалить</button>
+            onclick="deleteImage('{{$.SessionID}}','{{$.AlbumID}}','{{.Filename}}',this)">удᴀᴧиᴛь</button>
           {{end}}
         </div>
       </div>
@@ -58,7 +58,7 @@
   {{else}}
   <div class="empty-state">
     <div class="empty-icon">📷</div>
-    <div class="empty-text">У вас пока нет загруженных изображений</div>
+    <div class="empty-text">у ʙᴀᴄ ᴨоᴋᴀ нᴇᴛ зᴀᴦᴩужᴇнных изобᴩᴀжᴇний</div>
     <a href="/" class="empty-link">Загрузить первое изображение</a>
   </div>
   {{end}}
@@ -67,7 +67,7 @@
       const uploadArea = document.getElementById('uploadArea');
       const fileInput = document.getElementById('fileInput');
       const uploadForm = document.getElementById('imageUploadForm');
-      
+
       if (uploadArea && fileInput && uploadForm) {
         uploadArea.addEventListener('click', function () { fileInput.click() });
         fileInput.addEventListener('change', function () {
@@ -93,7 +93,7 @@
       if (navigator.clipboard) {
         navigator.clipboard.writeText(url).then(function () {
           const originalText = button.textContent;
-          button.textContent = 'Скопировано!';
+          button.textContent = 'ᴄᴋоᴨиᴩоʙᴀно!';
           button.classList.add('copied');
           setTimeout(function () { button.textContent = originalText; button.classList.remove('copied') }, 2000);
         }).catch(function (err) { console.error('Не удалось скопировать URL: ', err) });
@@ -106,7 +106,7 @@
         try {
           document.execCommand('copy');
           const originalText = button.textContent;
-          button.textContent = 'Скопировано!';
+          button.textContent = 'ᴄᴋоᴨиᴩоʙᴀно!';
           button.classList.add('copied');
           setTimeout(function () { button.textContent = originalText; button.classList.remove('copied') }, 2000);
         } catch (err) { console.error('Не удалось скопировать URL: ', err) }
@@ -139,7 +139,7 @@
               if (remainingImages.length === 0) {
                 // Показываем пустое состояние
                 const imageGrid = document.getElementById('imageGrid');
-                imageGrid.innerHTML = '<div class="empty-state"><div class="empty-icon">📷</div><div class="empty-text">У вас пока нет загруженных изображений</div><a href="/" class="empty-link">Загрузить первое изображение</a></div>';
+                imageGrid.innerHTML = '<div class="empty-state"><div class="empty-icon">📷</div><div class="empty-text">у ʙᴀᴄ ᴨоᴋᴀ нᴇᴛ зᴀᴦᴩужᴇнных изобᴩᴀжᴇний</div><a href="/" class="empty-link">зᴀᴦᴩузиᴛь ᴨᴇᴩʙоᴇ изобᴩᴀжᴇниᴇ</a></div>';
               }
             }, 300);
           } else {
