@@ -3,9 +3,12 @@ package main
 import (
 	"fmt"
 	"html/template"
+	"mime/multipart"
 	"net/http"
 	"os"
 	"strings"
+	"sync"
+	"time"
 )
 
 // indexHandler обрабатывает главную страницу и альбомы/изображения
@@ -110,28 +113,86 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	
-	// Обрабатываем каждый файл
-	for i, fileHeader := range files {
-		// Открываем файл
-		file, err := fileHeader.Open()
-		if err != nil {
-			http.Error(w, fmt.Sprintf("Error opening file %s: %v", fileHeader.Filename, err), http.StatusInternalServerError)
-			return
-		}
-		
-		// Сохраняем изображение
-		_, err = saveImage(file, fileHeader, sessionID, albumID)
-		file.Close()
-		
-		if err != nil {
-			http.Error(w, fmt.Sprintf("Error saving image %s: %v", fileHeader.Filename, err), http.StatusInternalServerError)
-			return
-		}
-		
-		fmt.Printf("[INFO] uploadHandler: сохранен файл %d/%d: %s\n", i+1, len(files), fileHeader.Filename)
+	// Обрабатываем файлы параллельно
+	fmt.Printf("[DEBUG] uploadHandler: начало параллельной обработки %d файлов\n", len(files))
+	parallelStartTime := time.Now()
+	
+	var wg sync.WaitGroup
+	var mu sync.Mutex
+	var errors []error
+	var processedCount int
+	
+	// Ограничиваем количество одновременных goroutines для избежания перегрузки
+	maxWorkers := 4
+	if len(files) < maxWorkers {
+		maxWorkers = len(files)
 	}
 	
-	fmt.Printf("[INFO] uploadHandler: успешно загружено файлов: %d\n", len(files))
+	// Канал для задач
+	fileChan := make(chan *multipart.FileHeader, len(files))
+	
+	// Запускаем worker'ы
+	for i := 0; i < maxWorkers; i++ {
+		wg.Add(1)
+		go func(workerID int) {
+			defer wg.Done()
+			for fileHeader := range fileChan {
+				startTime := time.Now()
+				fmt.Printf("[DEBUG] uploadHandler: worker %d начало обработки файла: %s\n", workerID, fileHeader.Filename)
+				
+				// Открываем файл
+				file, err := fileHeader.Open()
+				if err != nil {
+					mu.Lock()
+					errors = append(errors, fmt.Errorf("worker %d: error opening file %s: %v", workerID, fileHeader.Filename, err))
+					mu.Unlock()
+					continue
+				}
+				
+				// Сохраняем изображение
+				_, err = saveImage(file, fileHeader, sessionID, albumID)
+				file.Close()
+				
+				if err != nil {
+					mu.Lock()
+					errors = append(errors, fmt.Errorf("worker %d: error saving file %s: %v", workerID, fileHeader.Filename, err))
+					mu.Unlock()
+					continue
+				}
+				
+				totalTime := time.Since(startTime)
+				mu.Lock()
+				processedCount++
+				fmt.Printf("[INFO] uploadHandler: worker %d сохранил файл %s (время: %v, всего обработано: %d/%d)\n",
+					workerID, fileHeader.Filename, totalTime, processedCount, len(files))
+				mu.Unlock()
+			}
+		}(i)
+	}
+	
+	// Отправляем файлы в канал
+	for _, fileHeader := range files {
+		fileChan <- fileHeader
+	}
+	close(fileChan)
+	
+	// Ждем завершения всех worker'ов
+	wg.Wait()
+	
+	parallelTotalTime := time.Since(parallelStartTime)
+	fmt.Printf("[DEBUG] uploadHandler: параллельная обработка завершена за %v\n", parallelTotalTime)
+	
+	// Проверяем наличие ошибок
+	if len(errors) > 0 {
+		errorMsg := fmt.Sprintf("Errors occurred during upload:\n")
+		for _, err := range errors {
+			errorMsg += err.Error() + "\n"
+		}
+		http.Error(w, errorMsg, http.StatusInternalServerError)
+		return
+	}
+	
+	fmt.Printf("[INFO] uploadHandler: успешно загружено файлов: %d (общее время: %v)\n", len(files), parallelTotalTime)
 	
 	// Перенаправляем на страницу альбома
 	http.Redirect(w, r, "/"+sessionID+"/"+albumID, http.StatusSeeOther)

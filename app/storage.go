@@ -108,44 +108,59 @@ func validateImageType(file multipart.File) (string, bool) {
 
 // saveImage сохраняет загруженное изображение
 func saveImage(file multipart.File, header *multipart.FileHeader, userID string, albumID string) (*ImageInfo, error) {
+	startTime := time.Now()
+	fmt.Printf("[DEBUG] saveImage: начало сохранения файла %s (размер: %d байт)\n", header.Filename, header.Size)
+	
 	// Проверяем размер файла
 	if header.Size > maxFileSize {
 		return nil, fmt.Errorf("file too large: %d bytes", header.Size)
 	}
 	
 	// Проверяем тип изображения
+	validateStart := time.Now()
 	extension, valid := validateImageType(file)
+	fmt.Printf("[DEBUG] saveImage: валидация типа завершена за %v\n", time.Since(validateStart))
 	if !valid {
 		return nil, fmt.Errorf("invalid image type")
 	}
 	
 	// Создаем директорию для альбома если она не существует
+	dirStart := time.Now()
 	err := ensureAlbumDir(userID, albumID)
+	fmt.Printf("[DEBUG] saveImage: создание директории завершено за %v\n", time.Since(dirStart))
 	if err != nil {
 		return nil, err
 	}
 	
 	// Генерируем уникальное имя файла
+	genStart := time.Now()
 	filename := generateUniqueFilename(header.Filename, extension)
+	fmt.Printf("[DEBUG] saveImage: генерация имени завершена за %v\n", time.Since(genStart))
 	
 	// Путь для сохранения в директории альбома
 	path := filepath.Join("/data", userID, albumID, filename)
 	
 	// Создаем файл для записи
+	createStart := time.Now()
 	dst, err := os.Create(path)
+	fmt.Printf("[DEBUG] saveImage: создание файла завершено за %v\n", time.Since(createStart))
 	if err != nil {
 		return nil, err
 	}
 	defer dst.Close()
 	
 	// Копируем содержимое файла
-	_, err = io.Copy(dst, file)
+	copyStart := time.Now()
+	bytesWritten, err := io.Copy(dst, file)
+	fmt.Printf("[DEBUG] saveImage: копирование %d байт завершено за %v\n", bytesWritten, time.Since(copyStart))
 	if err != nil {
 		return nil, err
 	}
 	
 	// Получаем информацию о файле
+	statStart := time.Now()
 	stat, err := os.Stat(path)
+	fmt.Printf("[DEBUG] saveImage: получение stat завершено за %v\n", time.Since(statStart))
 	if err != nil {
 		return nil, err
 	}
@@ -158,6 +173,9 @@ func saveImage(file multipart.File, header *multipart.FileHeader, userID string,
 		UserID:   userID,
 		AlbumID:  albumID,
 	}
+	
+	totalTime := time.Since(startTime)
+	fmt.Printf("[DEBUG] saveImage: общее время сохранения файла %s: %v\n", filename, totalTime)
 	
 	return imageInfo, nil
 }
