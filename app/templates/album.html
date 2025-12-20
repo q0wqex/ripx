@@ -47,7 +47,7 @@ h1{color:#333;margin:0}
 <div class="image-grid" id="imageGrid">
 {{range .Images}}
 <div class="image-item">
-<img src="/image/{{$.SessionID}}/{{$.AlbumID}}/{{.Filename}}" alt="{{.Filename}}">
+<img src="/{{$.SessionID}}/{{$.AlbumID}}/{{.Filename}}" alt="{{.Filename}}">
 <div class="image-info">
 <div class="image-name">{{.Filename}}</div>
 <div>
@@ -67,7 +67,7 @@ h1{color:#333;margin:0}
 {{end}}
 <script>
 function copyUrl(sessionID,albumID,filename,button){
-const url=window.location.origin+'/image/'+sessionID+'/'+albumID+'/'+filename;
+const url=window.location.origin+'/'+sessionID+'/'+albumID+'/'+filename;
 if(navigator.clipboard){
 navigator.clipboard.writeText(url).then(function(){
 const originalText=button.textContent;

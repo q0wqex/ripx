@@ -48,7 +48,7 @@ input[type="file"]{display:none}
 <div class="albums-list">
 {{range .Albums}}
 <div class="album-item">
-	<a href="/album?id={{.ID}}" class="album-link">{{.Name}}</a>
+	<a href="/{{$.SessionID}}/{{.ID}}" class="album-link">{{.Name}}</a>
 	<div class="album-count">{{.ImageCount}} изображений</div>
 	<div class="album-count">Создан: {{.CreatedAt.Format "02.01.2006 15:04"}}</div>
 </div>

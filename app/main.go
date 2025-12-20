@@ -25,8 +25,6 @@ func main() {
 	// Регистрация обработчиков
 	mux.HandleFunc("/", indexHandler)
 	mux.HandleFunc("/upload", uploadHandler)
-	mux.HandleFunc("/album", albumHandler)
-	mux.HandleFunc("/image/", imageHandler)
 	mux.HandleFunc("/delete-image", deleteImageHandler)
 	mux.HandleFunc("/delete-album", deleteAlbumHandler)
 	

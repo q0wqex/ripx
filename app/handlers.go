@@ -8,10 +8,16 @@ import (
 	"strings"
 )
 
-// indexHandler обрабатывает главную страницу
+// indexHandler обрабатывает главную страницу и альбомы/изображения
 func indexHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "GET" {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	
+	// Если это не главная страница, проверяем альбом/изображение
 	if r.URL.Path != "/" {
-		http.NotFound(w, r)
+		contentHandler(w, r)
 		return
 	}
 	
@@ -122,86 +128,59 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("[INFO] uploadHandler: успешно загружено файлов: %d\n", len(files))
 	
 	// Перенаправляем на страницу альбома
-	http.Redirect(w, r, "/album?id="+albumID, http.StatusSeeOther)
+	http.Redirect(w, r, "/"+sessionID+"/"+albumID, http.StatusSeeOther)
 }
 
-// albumHandler обрабатывает страницу альбома
-func albumHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Printf("[DEBUG] albumHandler: request received for URL=%s\n", r.URL.String())
-	
-	if r.Method != "GET" {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		return
-	}
-	
-	// Получаем ID сессии из cookie
-	cookie, err := r.Cookie("session_id")
-	var sessionID string
-	if err == nil && cookie.Value != "" {
-		sessionID = cookie.Value
-	}
-	fmt.Printf("[DEBUG] albumHandler: sessionID = %s\n", sessionID)
-	
-	// Получаем album_id из query параметра
-	albumID := r.URL.Query().Get("id")
-	if albumID == "" {
-		fmt.Printf("[DEBUG] albumHandler: album_id is empty\n")
-		http.Error(w, "album_id required", http.StatusBadRequest)
-		return
-	}
-	fmt.Printf("[DEBUG] albumHandler: albumID = %s\n", albumID)
-	
-	// Структура для передачи данных в шаблон
-	data := struct {
-		Images []ImageInfo
-		HasImages bool
-		SessionID string
-		AlbumID string
-	}{
-		SessionID: sessionID,
-		AlbumID: albumID,
-	}
-	
-	// Получаем все изображения пользователя без пагинации
-	if sessionID != "" {
-		images, err := getUserImagesPaginated(sessionID, albumID, 0, 0)
-		if err != nil {
-			// В случае ошибки, просто продолжаем с пустым списком
-			images = []ImageInfo{}
-		}
-		data.Images = images
-		data.HasImages = len(images) > 0
-	}
-	
-	// Отображаем страницу альбома
-	tmpl, err := template.ParseFiles("templates/album.html")
-	if err != nil {
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		return
-	}
-	err = tmpl.Execute(w, data)
-	if err != nil {
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		return
-	}
-}
-
-// imageHandler обрабатывает отдачу изображений
-func imageHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != "GET" {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		return
-	}
-	
-	// Получаем путь из URL (формат: /image/{sessionID}/{albumID}/{filename})
-	path := r.URL.Path[len("/image/"):]
+// contentHandler обрабатывает отдачу изображений или страницы альбома (без префикса)
+func contentHandler(w http.ResponseWriter, r *http.Request) {
+	// Пропускаем начальный "/"
+	path := r.URL.Path[1:]
 	if path == "" {
 		http.NotFound(w, r)
 		return
 	}
 	
-	// Разбираем путь на sessionID, albumID и filename
+	// Разбираем путь (формат: /{sessionID}/{albumID} или /{sessionID}/{albumID}/{filename})
 	parts := strings.SplitN(path, "/", 3)
+	
+	// Если 2 сегмента - это страница альбома
+	if len(parts) == 2 && parts[0] != "" && parts[1] != "" {
+		sessionID := parts[0]
+		albumID := parts[1]
+		
+		// Отображаем страницу альбома
+		data := struct {
+			Images    []ImageInfo
+			HasImages bool
+			SessionID string
+			AlbumID   string
+		}{
+			SessionID: sessionID,
+			AlbumID:   albumID,
+		}
+		
+		// Получаем все изображения альбома
+		images, err := getUserImagesPaginated(sessionID, albumID, 0, 0)
+		if err != nil {
+			images = []ImageInfo{}
+		}
+		data.Images = images
+		data.HasImages = len(images) > 0
+		
+		// Отображаем страницу альбома
+		tmpl, err := template.ParseFiles("templates/album.html")
+		if err != nil {
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			return
+		}
+		err = tmpl.Execute(w, data)
+		if err != nil {
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		}
+		return
+	}
+	
+	// Если 3 сегмента - это файл изображения
 	if len(parts) != 3 || parts[0] == "" || parts[1] == "" || parts[2] == "" {
 		http.NotFound(w, r)
 		return
