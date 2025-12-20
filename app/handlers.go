@@ -184,7 +184,7 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 	
 	// Проверяем наличие ошибок
 	if len(errors) > 0 {
-		errorMsg := fmt.Sprintf("Errors occurred during upload:\n")
+		errorMsg := "Errors occurred during upload:\n"
 		for _, err := range errors {
 			errorMsg += err.Error() + "\n"
 		}
@@ -272,7 +272,7 @@ func contentHandler(w http.ResponseWriter, r *http.Request) {
 	filename := parts[2]
 	
 	// Формируем путь к файлу
-	filePath := "/data/" + sessionID + "/" + albumID + "/" + filename
+	filePath := "data/" + sessionID + "/" + albumID + "/" + filename
 	
 	// Проверяем существование файла
 	if _, err := os.Stat(filePath); os.IsNotExist(err) {
@@ -312,7 +312,7 @@ func deleteImageHandler(w http.ResponseWriter, r *http.Request) {
 	
 	// Возвращаем успешный ответ
 	w.WriteHeader(http.StatusOK)
-	fmt.Fprintf(w, "Image deleted successfully")
+	w.Write([]byte("Image deleted successfully"))
 }
 
 // deleteAlbumHandler обрабатывает удаление альбома
@@ -373,6 +373,6 @@ func deleteUserHandler(w http.ResponseWriter, r *http.Request) {
 	
 	// Возвращаем успешный ответ
 	w.WriteHeader(http.StatusOK)
-	fmt.Fprintf(w, "Profile deleted successfully")
+	w.Write([]byte("Profile deleted successfully"))
 }
 
