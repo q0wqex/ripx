@@ -22,6 +22,10 @@ func main() {
 	// Настройка маршрутов
 	mux := http.NewServeMux()
 	
+	// Статические файлы
+	fs := http.FileServer(http.Dir("app/templates/static"))
+	mux.Handle("/static/", http.StripPrefix("/static/", fs))
+	
 	// Регистрация обработчиков
 	mux.HandleFunc("/", indexHandler)
 	mux.HandleFunc("/upload", uploadHandler)
