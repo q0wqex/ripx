@@ -51,35 +51,44 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 
 // uploadHandler обрабатывает загрузку изображений
 func uploadHandler(w http.ResponseWriter, r *http.Request) {
+	logger.Info("Начало обработки загрузки")
+	
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
 
 	sessionID := getSessionID(w, r)
+	logger.Debug("Session ID: " + sessionID)
 
 	// Ограничиваем размер запроса
 	if err := r.ParseMultipartForm(MaxFileSize); err != nil {
+		logger.Error("Ошибка парсинга формы: " + err.Error())
 		http.Error(w, "Error parsing form", http.StatusBadRequest)
 		return
 	}
 
 	// Получаем ID альбома
 	albumID := getAlbumID(r, sessionID)
+	logger.Debug("Album ID: " + albumID)
 
 	// Проверяем файлы
 	files := getUploadFiles(r)
+	logger.Debug("Количество файлов для загрузки: " + fmt.Sprintf("%d", len(files)))
 	if len(files) == 0 {
 		http.Error(w, "No files selected", http.StatusBadRequest)
 		return
 	}
 
 	// Обрабатываем файлы
+	logger.Info("Начало обработки " + fmt.Sprintf("%d", len(files)) + " файлов")
 	if err := processUpload(files, sessionID, albumID, w); err != nil {
+		logger.Error("Ошибка обработки загрузки: " + err.Error())
 		http.Error(w, fmt.Sprintf("Upload failed: %v", err), http.StatusInternalServerError)
 		return
 	}
 
+	logger.Info("Загрузка завершена успешно, перенаправление на альбом")
 	// Перенаправляем на альбом
 	http.Redirect(w, r, "/"+sessionID+"/"+albumID, http.StatusSeeOther)
 }
