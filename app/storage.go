@@ -118,8 +118,8 @@ func generateUniqueFilename(originalFilename, extension string) string {
 	return randomID + ext
 }
 
-// getUserImagesPaginated возвращает список изображений пользователя с пагинацией
-func getUserImagesPaginated(userID, albumID string, page, pageSize int) ([]ImageInfo, error) {
+// getUserImages возвращает список изображений пользователя
+func getUserImages(userID, albumID string) ([]ImageInfo, error) {
 	dirPath := DataPath + "/" + userID
 	if albumID != "" {
 		dirPath += "/" + albumID
@@ -161,20 +161,7 @@ func getUserImagesPaginated(userID, albumID string, page, pageSize int) ([]Image
 		})
 	}
 
-	// Применение пагинации
-	if pageSize > 0 {
-		start := page * pageSize
-		if start >= len(images) {
-			return []ImageInfo{}, nil
-		}
 
-		end := start + pageSize
-		if end > len(images) {
-			end = len(images)
-		}
-
-		images = images[start:end]
-	}
 
 	return images, nil
 }

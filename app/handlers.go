@@ -111,7 +111,7 @@ func handleAlbumPage(w http.ResponseWriter, r *http.Request, sessionID, albumID 
 	currentSessionID := getSessionID(w, r)
 	isOwner := currentSessionID == sessionID
 
-	images, err := getUserImagesPaginated(sessionID, albumID, 0, 0)
+	images, err := getUserImages(sessionID, albumID)
 	if err != nil {
 		images = []ImageInfo{}
 	}
