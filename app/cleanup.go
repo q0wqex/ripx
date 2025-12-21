@@ -7,49 +7,41 @@ import (
 	"time"
 )
 
-// cleanupDuration определяет как долго изображения хранятся перед очисткой
-const cleanupDuration = 1440 * time.Hour
-
-// cleanupInterval определяет как часто запускается очистка
-const cleanupInterval = 24 * time.Hour
-
 // startCleanupWorker запускает фоновый процесс очистки старых изображений
 func startCleanupWorker(ctx context.Context) {
-	ticker := time.NewTicker(cleanupInterval)
+	ticker := time.NewTicker(CleanupInterval)
 	defer ticker.Stop()
 
 	for {
 		select {
 		case <-ctx.Done():
-			// Graceful shutdown при отмене контекста
-			return
+			return // Graceful shutdown
 		case <-ticker.C:
-			// Периодическая очистка
-			err := cleanupOldImages()
-			if err != nil {
-				// Ошибки игнорируем, продолжаем работу
-				continue
-			}
-
-			err = removeEmptyDirectories()
-			if err != nil {
-				// Ошибки игнорируем, продолжаем работу
-				continue
-			}
+			performCleanup()
 		}
+	}
+}
+
+// performCleanup выполняет очистку
+func performCleanup() {
+	if err := cleanupOldImages(); err != nil {
+		logger.Error("Failed to cleanup old images: " + err.Error())
+	}
+
+	if err := removeEmptyDirectories(); err != nil {
+		logger.Error("Failed to remove empty directories: " + err.Error())
 	}
 }
 
 // cleanupOldImages удаляет старые изображения
 func cleanupOldImages() error {
-	// Проверяем существование директории /data
-	dataDir := "/data"
-	if _, err := os.Stat(dataDir); os.IsNotExist(err) {
+	// Проверка существования директории /data
+	if _, err := os.Stat(DataPath); os.IsNotExist(err) {
 		return nil
 	}
 
-	// Читаем все пользовательские директории
-	entries, err := os.ReadDir(dataDir)
+	// Чтение всех пользовательских директорий
+	entries, err := os.ReadDir(DataPath)
 	if err != nil {
 		return err
 	}
@@ -59,11 +51,9 @@ func cleanupOldImages() error {
 			continue
 		}
 
-		userDir := filepath.Join(dataDir, entry.Name())
-		err := cleanupUserImages(userDir)
-		if err != nil {
-			// Продолжаем очистку других директорий при ошибке
-			continue
+		userDir := filepath.Join(DataPath, entry.Name())
+		if err := cleanupUserImages(userDir); err != nil {
+			logger.Error("Failed to cleanup user images in " + userDir + ": " + err.Error())
 		}
 	}
 
@@ -79,27 +69,19 @@ func cleanupUserImages(userDir string) error {
 
 	for _, entry := range entries {
 		if entry.IsDir() {
-			continue
+			continue // Пропускаем поддиректории
 		}
 
 		filePath := filepath.Join(userDir, entry.Name())
-
-		// Получаем информацию о файле
 		info, err := entry.Info()
 		if err != nil {
-			// Пропускаем файл при ошибке
-			continue
+			continue // Пропускаем файл при ошибке
 		}
 
 		// Проверяем, является ли файл старым
-		// Используем время модификации как fallback для времени доступа
-		lastAccess := info.ModTime()
-		if isImageOld(lastAccess) {
-			// Удаляем старый файл
-			err := os.Remove(filePath)
-			if err != nil {
-				// Игнорируем ошибку удаления, продолжаем очистку
-				continue
+		if isImageOld(info.ModTime()) {
+			if err := os.Remove(filePath); err != nil {
+				logger.Error("Failed to remove old image " + filePath + ": " + err.Error())
 			}
 		}
 	}
@@ -108,18 +90,19 @@ func cleanupUserImages(userDir string) error {
 }
 
 // isImageOld проверяет, является ли изображение старым
-func isImageOld(lastAccess time.Time) bool {
-	// Изображение считается старым, если время последнего доступа
-	// старше cleanupDuration (24 часа)
-	return time.Since(lastAccess) > cleanupDuration
+func isImageOld(modTime time.Time) bool {
+	return time.Since(modTime) > CleanupDuration
 }
 
 // removeEmptyDirectories удаляет пустые директории
 func removeEmptyDirectories() error {
-	dataDir := "/data"
+	// Проверка существования директории /data
+	if _, err := os.Stat(DataPath); os.IsNotExist(err) {
+		return nil
+	}
 
-	// Сначала удаляем пустые пользовательские директории
-	entries, err := os.ReadDir(dataDir)
+	// Чтение всех пользовательских директорий
+	entries, err := os.ReadDir(DataPath)
 	if err != nil {
 		return err
 	}
@@ -129,7 +112,7 @@ func removeEmptyDirectories() error {
 			continue
 		}
 
-		userDir := filepath.Join(dataDir, entry.Name())
+		userDir := filepath.Join(DataPath, entry.Name())
 
 		// Проверяем, пуста ли директория
 		isEmpty, err := isDirEmpty(userDir)
@@ -138,11 +121,8 @@ func removeEmptyDirectories() error {
 		}
 
 		if isEmpty {
-			// Удаляем пустую директорию пользователя
-			err := os.Remove(userDir)
-			if err != nil {
-				// Игнорируем ошибку удаления, продолжаем очистку
-				continue
+			if err := os.Remove(userDir); err != nil {
+				logger.Error("Failed to remove empty directory " + userDir + ": " + err.Error())
 			}
 		}
 	}
@@ -156,6 +136,5 @@ func isDirEmpty(dirPath string) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-
 	return len(entries) == 0, nil
 }

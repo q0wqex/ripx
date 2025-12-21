@@ -8,293 +8,155 @@ import (
 	"os"
 	"strings"
 	"sync"
-	"time"
 )
 
-// indexHandler обрабатывает главную страницу и альбомы/изображения
+// indexHandler обрабатывает главную страницу
 func indexHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != "GET" {
+	if r.Method != http.MethodGet {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
 
-	// Если это не главная страница, проверяем альбом/изображение
+	// Если это не главная страница, обрабатываем как контент
 	if r.URL.Path != "/" {
 		contentHandler(w, r)
 		return
 	}
 
-	if r.Method == "GET" {
-		// Получаем ID сессии пользователя
-		sessionID := getSessionID(w, r)
+	// Получаем сессию пользователя
+	sessionID := getSessionID(w, r)
 
-		// Получаем список альбомов пользователя
-		albums, err := getUserAlbums(sessionID)
-		if err != nil {
-			// В случае ошибки продолжаем с пустым списком
-			albums = []AlbumInfo{}
-		}
-
-		// Добавляем логирование для проверки структуры данных
-		fmt.Printf("[DEBUG] indexHandler: received %d albums\n", len(albums))
-		for i, album := range albums {
-			fmt.Printf("[DEBUG]   [%d] ID=%s, CreatedAt=%v\n", i, album.ID, album.CreatedAt)
-		}
-
-		// Структура для передачи данных в шаблон
-		data := struct {
-			Albums    []AlbumInfo
-			HasAlbums bool
-			SessionID string
-		}{
-			Albums:    albums,
-			HasAlbums: len(albums) > 0,
-			SessionID: sessionID,
-		}
-
-		// Отображаем главную страницу
-		tmpl, err := template.ParseFiles("templates/index.html")
-		if err != nil {
-			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-			return
-		}
-		err = tmpl.Execute(w, data)
-		if err != nil {
-			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-			return
-		}
-		return
+	// Получаем список альбомов
+	albums, err := getUserAlbums(sessionID)
+	if err != nil {
+		albums = []AlbumInfo{}
 	}
 
-	// Для других методов возвращаем ошибку
-	http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+	// Подготавливаем данные для шаблона
+	data := struct {
+		Albums    []AlbumInfo
+		HasAlbums bool
+		SessionID string
+	}{
+		Albums:    albums,
+		HasAlbums: len(albums) > 0,
+		SessionID: sessionID,
+	}
+
+	// Отображаем страницу
+	if err := renderTemplate(w, TemplatesPath+"/index.html", data); err != nil {
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+	}
 }
 
 // uploadHandler обрабатывает загрузку изображений
 func uploadHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != "POST" {
+	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
 
-	// Получаем ID сессии пользователя
 	sessionID := getSessionID(w, r)
 
-	// Ограничиваем размер запроса до 10MB
-	err := r.ParseMultipartForm(10 << 20) // 10 MB
-	if err != nil {
+	// Ограничиваем размер запроса
+	if err := r.ParseMultipartForm(MaxFileSize); err != nil {
 		http.Error(w, "Error parsing form", http.StatusBadRequest)
 		return
 	}
 
-	// Получаем album_id из формы
-	albumID := r.FormValue("album_id")
+	// Получаем ID альбома
+	albumID := getAlbumID(r, sessionID)
 
-	// Если album_id не указан, создаем новый альбом автоматически
-	if albumID == "" {
-		newAlbumID, err := createAlbum(sessionID)
-		if err != nil {
-			http.Error(w, fmt.Sprintf("Error creating album: %v", err), http.StatusInternalServerError)
-			return
-		}
-		albumID = newAlbumID
-	}
-
-	// Проверяем наличие файлов в запросе
-	if r.MultipartForm == nil || r.MultipartForm.File == nil {
-		http.Error(w, "No files in request", http.StatusBadRequest)
-		return
-	}
-
-	// Получаем все файлы из формы
-	files := r.MultipartForm.File["image"]
+	// Проверяем файлы
+	files := getUploadFiles(r)
 	if len(files) == 0 {
 		http.Error(w, "No files selected", http.StatusBadRequest)
 		return
 	}
 
-	// Обрабатываем файлы параллельно
-	fmt.Printf("[DEBUG] uploadHandler: начало параллельной обработки %d файлов\n", len(files))
-	parallelStartTime := time.Now()
-
-	var wg sync.WaitGroup
-	var mu sync.Mutex
-	var errors []error
-	var processedCount int
-
-	// Ограничиваем количество одновременных goroutines для избежания перегрузки
-	maxWorkers := 8
-	if len(files) < maxWorkers {
-		maxWorkers = len(files)
-	}
-
-	// Канал для задач
-	fileChan := make(chan *multipart.FileHeader, len(files))
-
-	// Запускаем worker'ы
-	for i := 0; i < maxWorkers; i++ {
-		wg.Add(1)
-		go func(workerID int) {
-			defer wg.Done()
-			for fileHeader := range fileChan {
-				startTime := time.Now()
-				fmt.Printf("[DEBUG] uploadHandler: worker %d начало обработки файла: %s\n", workerID, fileHeader.Filename)
-
-				// Открываем файл
-				file, err := fileHeader.Open()
-				if err != nil {
-					mu.Lock()
-					errors = append(errors, fmt.Errorf("worker %d: error opening file %s: %v", workerID, fileHeader.Filename, err))
-					mu.Unlock()
-					continue
-				}
-
-				// Сохраняем изображение
-				_, err = saveImage(file, fileHeader, sessionID, albumID)
-				file.Close()
-
-				if err != nil {
-					mu.Lock()
-					errors = append(errors, fmt.Errorf("worker %d: error saving file %s: %v", workerID, fileHeader.Filename, err))
-					mu.Unlock()
-					continue
-				}
-
-				totalTime := time.Since(startTime)
-				mu.Lock()
-				processedCount++
-				fmt.Printf("[INFO] uploadHandler: worker %d сохранил файл %s (время: %v, всего обработано: %d/%d)\n",
-					workerID, fileHeader.Filename, totalTime, processedCount, len(files))
-				mu.Unlock()
-			}
-		}(i)
-	}
-
-	// Отправляем файлы в канал
-	for _, fileHeader := range files {
-		fileChan <- fileHeader
-	}
-	close(fileChan)
-
-	// Ждем завершения всех worker'ов
-	wg.Wait()
-
-	parallelTotalTime := time.Since(parallelStartTime)
-	fmt.Printf("[DEBUG] uploadHandler: параллельная обработка завершена за %v\n", parallelTotalTime)
-
-	// Проверяем наличие ошибок
-	if len(errors) > 0 {
-		errorMsg := "Errors occurred during upload:\n"
-		for _, err := range errors {
-			errorMsg += err.Error() + "\n"
-		}
-		http.Error(w, errorMsg, http.StatusInternalServerError)
+	// Обрабатываем файлы
+	if err := processUpload(files, sessionID, albumID, w); err != nil {
+		http.Error(w, fmt.Sprintf("Upload failed: %v", err), http.StatusInternalServerError)
 		return
 	}
 
-	fmt.Printf("[INFO] uploadHandler: успешно загружено файлов: %d (общее время: %v)\n", len(files), parallelTotalTime)
-
-	// Перенаправляем на страницу альбома
+	// Перенаправляем на альбом
 	http.Redirect(w, r, "/"+sessionID+"/"+albumID, http.StatusSeeOther)
 }
 
-// contentHandler обрабатывает отдачу изображений или страницы альбома (без префикса)
+// contentHandler обрабатывает отдачу изображений или страницы альбома
 func contentHandler(w http.ResponseWriter, r *http.Request) {
-	// Пропускаем начальный "/"
-	path := r.URL.Path[1:]
+	path := strings.TrimPrefix(r.URL.Path, "/")
 	if path == "" {
 		http.NotFound(w, r)
 		return
 	}
 
-	// Разбираем путь (формат: /{sessionID}/{albumID} или /{sessionID}/{albumID}/{filename})
 	parts := strings.SplitN(path, "/", 3)
-
-	// Если 2 сегмента - это страница альбома
-	if len(parts) == 2 && parts[0] != "" && parts[1] != "" {
-		sessionID := parts[0]
-		albumID := parts[1]
-
-		// Получаем ID сессии текущего пользователя
-		currentSessionID := getSessionID(w, r)
-
-		// Проверяем, является ли текущий пользователь владельцем альбома
-		isOwner := (currentSessionID == sessionID)
-
-		// Добавляем логирование для диагностики
-		fmt.Printf("[DEBUG] contentHandler: albumID=%s, ownerSessionID=%s, currentSessionID=%s, isOwner=%v\n",
-			albumID, sessionID, currentSessionID, isOwner)
-
-		// Отображаем страницы альбома
-		data := struct {
-			Images         []ImageInfo
-			HasImages      bool
-			SessionID      string
-			OwnerSessionID string
-			AlbumID        string
-			IsOwner        bool
-		}{
-			SessionID:      currentSessionID,
-			OwnerSessionID: sessionID,
-			AlbumID:        albumID,
-			IsOwner:        isOwner,
-		}
-
-		// Получаем все изображения альбома (используем sessionID владельца)
-		images, err := getUserImagesPaginated(sessionID, albumID, 0, 0)
-		if err != nil {
-			images = []ImageInfo{}
-		}
-		data.Images = images
-		data.HasImages = len(images) > 0
-
-		// Отображаем страницу альбома
-		tmpl, err := template.ParseFiles("templates/album.html")
-		if err != nil {
-			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-			return
-		}
-		err = tmpl.Execute(w, data)
-		if err != nil {
-			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		}
-		return
-	}
-
-	// Если 3 сегмента - это файл изображения
-	if len(parts) != 3 || parts[0] == "" || parts[1] == "" || parts[2] == "" {
+	
+	switch len(parts) {
+	case 2:
+		// Страница альбома
+		handleAlbumPage(w, r, parts[0], parts[1])
+	case 3:
+		// Файл изображения
+		handleImageFile(w, r, parts[0], parts[1], parts[2])
+	default:
 		http.NotFound(w, r)
-		return
+	}
+}
+
+// handleAlbumPage обрабатывает страницу альбома
+func handleAlbumPage(w http.ResponseWriter, r *http.Request, sessionID, albumID string) {
+	currentSessionID := getSessionID(w, r)
+	isOwner := currentSessionID == sessionID
+
+	images, err := getUserImagesPaginated(sessionID, albumID, 0, 0)
+	if err != nil {
+		images = []ImageInfo{}
 	}
 
-	sessionID := parts[0]
-	albumID := parts[1]
-	filename := parts[2]
+	data := struct {
+		Images         []ImageInfo
+		HasImages      bool
+		SessionID      string
+		OwnerSessionID string
+		AlbumID        string
+		IsOwner        bool
+	}{
+		Images:         images,
+		HasImages:      len(images) > 0,
+		SessionID:      currentSessionID,
+		OwnerSessionID: sessionID,
+		AlbumID:        albumID,
+		IsOwner:        isOwner,
+	}
 
-	// Формируем путь к файлу
-	filePath := "/data/" + sessionID + "/" + albumID + "/" + filename
+	if err := renderTemplate(w, TemplatesPath+"/album.html", data); err != nil {
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+	}
+}
 
-	// Проверяем существование файла
+// handleImageFile обрабатывает отдачу файла изображения
+func handleImageFile(w http.ResponseWriter, r *http.Request, sessionID, albumID, filename string) {
+	filePath := DataPath + "/" + sessionID + "/" + albumID + "/" + filename
+
 	if _, err := os.Stat(filePath); os.IsNotExist(err) {
 		http.NotFound(w, r)
 		return
 	}
 
-	// Отдаем файл
 	http.ServeFile(w, r, filePath)
 }
 
 // deleteImageHandler обрабатывает удаление изображения
 func deleteImageHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != "POST" {
+	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
 
-	// Получаем ID сессии из cookie
 	sessionID := getSessionID(w, r)
-
-	// Получаем параметры из формы
 	albumID := r.FormValue("album_id")
 	filename := r.FormValue("filename")
 
@@ -303,29 +165,22 @@ func deleteImageHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Удаляем изображение
-	err := deleteImage(sessionID, albumID, filename)
-	if err != nil {
+	if err := deleteImage(sessionID, albumID, filename); err != nil {
 		http.Error(w, fmt.Sprintf("Error deleting image: %v", err), http.StatusInternalServerError)
 		return
 	}
 
-	// Возвращаем успешный ответ
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("Image deleted successfully"))
+	SuccessResponse(w, map[string]string{"message": "Image deleted successfully"})
 }
 
 // deleteAlbumHandler обрабатывает удаление альбома
 func deleteAlbumHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != "POST" {
+	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
 
-	// Получаем ID сессии из cookie
 	sessionID := getSessionID(w, r)
-
-	// Получаем album_id из формы
 	albumID := r.FormValue("album_id")
 
 	if albumID == "" {
@@ -333,37 +188,31 @@ func deleteAlbumHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Удаляем альбом
-	err := deleteAlbum(sessionID, albumID)
-	if err != nil {
+	if err := deleteAlbum(sessionID, albumID); err != nil {
 		http.Error(w, fmt.Sprintf("Error deleting album: %v", err), http.StatusInternalServerError)
 		return
 	}
 
-	// Перенаправляем на главную страницу
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
 // deleteUserHandler обрабатывает удаление профиля пользователя
 func deleteUserHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != "POST" {
+	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
 
-	// Получаем ID сессии из cookie
 	sessionID := getSessionID(w, r)
 
-	// Удаляем все данные пользователя
-	err := deleteUser(sessionID)
-	if err != nil {
+	if err := deleteUser(sessionID); err != nil {
 		http.Error(w, fmt.Sprintf("Error deleting user data: %v", err), http.StatusInternalServerError)
 		return
 	}
 
-	// Очищаем cookie, устанавливая время жизни в прошлом
+	// Очищаем cookie
 	http.SetCookie(w, &http.Cookie{
-		Name:     "session_id",
+		Name:     SessionCookieName,
 		Value:    "",
 		Path:     "/",
 		MaxAge:   -1,
@@ -371,7 +220,133 @@ func deleteUserHandler(w http.ResponseWriter, r *http.Request) {
 		SameSite: http.SameSiteLaxMode,
 	})
 
-	// Возвращаем успешный ответ
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("Profile deleted successfully"))
+	SuccessResponse(w, map[string]string{"message": "Profile deleted successfully"})
+}
+
+// Вспомогательные функции
+
+// getAlbumID получает или создает ID альбома
+func getAlbumID(r *http.Request, sessionID string) string {
+	albumID := r.FormValue("album_id")
+	if albumID != "" {
+		return albumID
+	}
+
+	// Создаем новый альбом если не указан
+	newAlbumID, err := createAlbum(sessionID)
+	if err != nil {
+		return ""
+	}
+	return newAlbumID
+}
+
+// getUploadFiles извлекает файлы из запроса
+func getUploadFiles(r *http.Request) []*multipart.FileHeader {
+	if r.MultipartForm == nil || r.MultipartForm.File == nil {
+		return nil
+	}
+
+	files := r.MultipartForm.File["image"]
+	if len(files) == 0 {
+		return nil
+	}
+
+	return files
+}
+
+// processUpload обрабатывает загрузку файлов
+func processUpload(files []*multipart.FileHeader, sessionID, albumID string, w http.ResponseWriter) error {
+	// Для небольшого количества файлов используем последовательную обработку
+	if len(files) <= 5 {
+		return processSequentialUpload(files, sessionID, albumID)
+	}
+
+	// Для большого количества файлов используем параллельную обработку
+	return processParallelUpload(files, sessionID, albumID)
+}
+
+// processSequentialUpload обрабатывает файлы последовательно
+func processSequentialUpload(files []*multipart.FileHeader, sessionID, albumID string) error {
+	for _, fileHeader := range files {
+		file, err := fileHeader.Open()
+		if err != nil {
+			return fmt.Errorf("error opening file %s: %v", fileHeader.Filename, err)
+		}
+		defer file.Close()
+
+		_, err = saveImage(file, fileHeader, sessionID, albumID)
+		if err != nil {
+			return fmt.Errorf("error saving file %s: %v", fileHeader.Filename, err)
+		}
+	}
+	return nil
+}
+
+// processParallelUpload обрабатывает файлы параллельно
+func processParallelUpload(files []*multipart.FileHeader, sessionID, albumID string) error {
+	var wg sync.WaitGroup
+	var mu sync.Mutex
+	var errors []error
+
+	workerCount := MaxWorkers
+	if len(files) < workerCount {
+		workerCount = len(files)
+	}
+
+	fileChan := make(chan *multipart.FileHeader, len(files))
+
+	// Запускаем воркеров
+	for i := 0; i < workerCount; i++ {
+		wg.Add(1)
+		go func(workerID int) {
+			defer wg.Done()
+			for fileHeader := range fileChan {
+				if err := processSingleFile(fileHeader, sessionID, albumID); err != nil {
+					mu.Lock()
+					errors = append(errors, fmt.Errorf("worker %d: %v", workerID, err))
+					mu.Unlock()
+				}
+			}
+		}(i)
+	}
+
+	// Отправляем файлы на обработку
+	for _, fileHeader := range files {
+		fileChan <- fileHeader
+	}
+	close(fileChan)
+
+	// Ждем завершения
+	wg.Wait()
+
+	if len(errors) > 0 {
+		return fmt.Errorf("upload errors: %v", errors)
+	}
+
+	return nil
+}
+
+// processSingleFile обрабатывает один файл
+func processSingleFile(fileHeader *multipart.FileHeader, sessionID, albumID string) error {
+	file, err := fileHeader.Open()
+	if err != nil {
+		return fmt.Errorf("error opening file %s: %v", fileHeader.Filename, err)
+	}
+	defer file.Close()
+
+	_, err = saveImage(file, fileHeader, sessionID, albumID)
+	if err != nil {
+		return fmt.Errorf("error saving file %s: %v", fileHeader.Filename, err)
+	}
+
+	return nil
+}
+
+// renderTemplate рендерит HTML шаблон
+func renderTemplate(w http.ResponseWriter, templatePath string, data interface{}) error {
+	tmpl, err := template.ParseFiles(templatePath)
+	if err != nil {
+		return err
+	}
+	return tmpl.Execute(w, data)
 }

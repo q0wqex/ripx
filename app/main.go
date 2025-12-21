@@ -6,87 +6,115 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"path/filepath"
 	"syscall"
 )
 
 func main() {
-	// Создание директории для хранения данных
-	err := ensureDataDir()
-	if err != nil {
+	// Инициализация приложения
+	if err := initializeApp(); err != nil {
+		fmt.Printf("Failed to initialize app: %v\n", err)
 		os.Exit(1)
 	}
-	
-	// Создаем контекст для graceful shutdown
+
+	// Создание HTTP роутера
+	mux := setupRoutes()
+
+	// Запуск cleanup worker
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-	
-	// Настройка маршрутов
+	go startCleanupWorker(ctx)
+
+	// Настройка graceful shutdown
+	sigChan := make(chan os.Signal, 1)
+	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
+
+	// Запуск сервера
+	serverErr := make(chan error, 1)
+	go func() {
+		fmt.Printf("Server starting on %s\n", ServerAddr)
+		serverErr <- http.ListenAndServe(ServerAddr, mux)
+	}()
+
+	// Ожидание сигнала или ошибки
+	select {
+	case <-sigChan:
+		fmt.Println("Received shutdown signal")
+	case err := <-serverErr:
+		fmt.Printf("Server error: %v\n", err)
+	}
+
+	fmt.Println("Shutting down gracefully...")
+	cancel()
+}
+
+// initializeApp инициализирует приложение
+func initializeApp() error {
+	// Создание директории для хранения данных
+	if err := EnsureDir(DataPath); err != nil {
+		return err
+	}
+
+	// Проверка доступности директории шаблонов
+	if err := checkTemplates(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// checkTemplates проверяет доступность шаблонов
+func checkTemplates() error {
+	_, err := os.Stat(TemplatesPath + "/index.html")
+	return err
+}
+
+// setupRoutes настраивает HTTP роуты
+func setupRoutes() *http.ServeMux {
 	mux := http.NewServeMux()
-	
-	// Статические файлы с правильным MIME типом
-	mux.HandleFunc("/static/", func(w http.ResponseWriter, r *http.Request) {
-		// Добавляем логирование для диагностики
-		fmt.Printf("[DEBUG] Static file request: %s\n", r.URL.Path)
-		
-		// Определяем MIME тип на основе расширения файла
-		ext := filepath.Ext(r.URL.Path)
-		switch ext {
-		case ".css":
-			w.Header().Set("Content-Type", "text/css")
-		case ".js":
-			w.Header().Set("Content-Type", "application/javascript")
-		case ".png":
-			w.Header().Set("Content-Type", "image/png")
-		case ".jpg", ".jpeg":
-			w.Header().Set("Content-Type", "image/jpeg")
-		case ".gif":
-			w.Header().Set("Content-Type", "image/gif")
-		case ".svg":
-			w.Header().Set("Content-Type", "image/svg+xml")
-		}
-		
-		// Убираем префикс /static/ из пути и добавляем правильный путь к шаблонам
-		filePath := "templates" + r.URL.Path // добавляем templates/
-		fmt.Printf("[DEBUG] Looking for file at path: %s\n", filePath)
-		
-		// Проверяем существование файла
-		if _, err := os.Stat(filePath); os.IsNotExist(err) {
-			fmt.Printf("[DEBUG] File not found: %s\n", filePath)
-			http.NotFound(w, r)
-			return
-		}
-		
-		http.ServeFile(w, r, filePath)
-	})
-	
-	// Регистрация обработчиков
+
+	// Статические файлы
+	mux.HandleFunc("/static/", handleStaticFiles)
+
+	// API endpoints
 	mux.HandleFunc("/", indexHandler)
 	mux.HandleFunc("/upload", uploadHandler)
 	mux.HandleFunc("/delete-image", deleteImageHandler)
 	mux.HandleFunc("/delete-album", deleteAlbumHandler)
 	mux.HandleFunc("/delete-user", deleteUserHandler)
-	
-	// Запуск cleanup worker в отдельной goroutine
-	go startCleanupWorker(ctx)
-	
-	// Настройка graceful shutdown через сигналы
-	sigChan := make(chan os.Signal, 1)
-	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
-	
-	// Запуск сервера в отдельной goroutine
-	serverErr := make(chan error, 1)
-	go func() {
-		serverErr <- http.ListenAndServe("0.0.0.0:8000", mux)
-	}()
-	
-	// Ожидание сигнала или ошибки сервера
-	select {
-	case <-sigChan:
-		// Получен сигнал завершения
-		cancel() // Останавливаем cleanup worker
-	case <-serverErr:
-		// Ошибка сервера
-		cancel() // Останавливаем cleanup worker
+
+	return mux
+}
+
+// handleStaticFiles обрабатывает статические файлы
+func handleStaticFiles(w http.ResponseWriter, r *http.Request) {
+	filePath := StaticPath + r.URL.Path[len("/static"):]
+
+	// Определение MIME типа
+	setContentType(w, filePath)
+
+	// Проверка существования файла
+	if _, err := os.Stat(filePath); os.IsNotExist(err) {
+		http.NotFound(w, r)
+		return
+	}
+
+	http.ServeFile(w, r, filePath)
+}
+
+// setContentType устанавливает Content-Type для статических файлов
+func setContentType(w http.ResponseWriter, filePath string) {
+	switch GetFileExtension(filePath) {
+	case ".css":
+		w.Header().Set("Content-Type", "text/css")
+	case ".js":
+		w.Header().Set("Content-Type", "application/javascript")
+	case ".png":
+		w.Header().Set("Content-Type", "image/png")
+	case ".jpg", ".jpeg":
+		w.Header().Set("Content-Type", "image/jpeg")
+	case ".gif":
+		w.Header().Set("Content-Type", "image/gif")
+	case ".svg":
+		w.Header().Set("Content-Type", "image/svg+xml")
 	}
 }
