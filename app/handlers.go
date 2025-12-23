@@ -52,12 +52,14 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 
 // uploadHandler обрабатывает загрузку изображений
 func uploadHandler(w http.ResponseWriter, r *http.Request) {
+	logger.Debug(fmt.Sprintf("uploadHandler: request received, method=%s", r.Method))
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
 
 	sessionID := getSessionID(w, r)
+	logger.Debug(fmt.Sprintf("uploadHandler: sessionID=%s", sessionID))
 
 	// Ограничиваем размер запроса
 	if err := r.ParseMultipartForm(MaxFileSize); err != nil {
@@ -276,6 +278,7 @@ func getUploadFiles(r *http.Request) []*multipart.FileHeader {
 
 // processUpload обрабатывает загрузку файлов параллельно
 func processUpload(files []*multipart.FileHeader, sessionID, albumID string, w http.ResponseWriter) error {
+	logger.Debug(fmt.Sprintf("processUpload: starting, files_count=%d, sessionID=%s, albumID=%s", len(files), sessionID, albumID))
 	var wg sync.WaitGroup
 	errs := make(chan error, len(files))
 
