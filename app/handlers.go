@@ -11,6 +11,7 @@ import (
 
 // indexHandler обрабатывает главную страницу
 func indexHandler(w http.ResponseWriter, r *http.Request) {
+	logger.Debug(fmt.Sprintf("indexHandler: request received, path=%s, method=%s", r.URL.Path, r.Method))
 	if r.Method != http.MethodGet {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
