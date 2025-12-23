@@ -27,6 +27,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Получаем список альбомов
 	albums, err := getUserAlbums(sessionID)
+	logger.Debug(fmt.Sprintf("getUserAlbums: sessionID=%s, albums_count=%d, err=%v", sessionID, len(albums), err))
 	if err != nil {
 		albums = []AlbumInfo{}
 	}

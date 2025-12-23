@@ -173,11 +173,13 @@ func getSessionID(w http.ResponseWriter, r *http.Request) string {
 	// Проверка наличия cookie
 	cookie, err := r.Cookie(SessionCookieName)
 	if err == nil && cookie.Value != "" {
+		logger.Debug(fmt.Sprintf("getSessionID: using existing cookie, sessionID=%s", cookie.Value))
 		return cookie.Value
 	}
 
 	// Генерация нового ID сессии
 	sessionID := RandomID()
+	logger.Debug(fmt.Sprintf("getSessionID: creating new session, sessionID=%s", sessionID))
 
 	// Установка cookie
 	http.SetCookie(w, &http.Cookie{
@@ -195,17 +197,21 @@ func getSessionID(w http.ResponseWriter, r *http.Request) string {
 // getUserAlbums возвращает список альбомов пользователя
 func getUserAlbums(userID string) ([]AlbumInfo, error) {
 	userDir := userPath(userID)
+	logger.Debug(fmt.Sprintf("getUserAlbums: userDir=%s", userDir))
 
 	// Проверка существования директории
 	if _, err := os.Stat(userDir); os.IsNotExist(err) {
+		logger.Debug("getUserAlbums: user dir does not exist")
 		return []AlbumInfo{}, nil
 	}
 
 	// Чтение содержимого директории
 	entries, err := os.ReadDir(userDir)
 	if err != nil {
+		logger.Debug(fmt.Sprintf("getUserAlbums: error reading dir: %v", err))
 		return nil, err
 	}
+	logger.Debug(fmt.Sprintf("getUserAlbums: found %d entries", len(entries)))
 
 	var albums []AlbumInfo
 	for _, entry := range entries {
@@ -264,9 +270,11 @@ func createAlbum(userID string) (string, error) {
 
 	// Создание директории для альбома
 	albumDir := albumPath(userID, albumID)
+	logger.Debug(fmt.Sprintf("createAlbum: creating albumDir=%s", albumDir))
 	if err := EnsureDir(albumDir); err != nil {
 		return "", err
 	}
+	logger.Debug(fmt.Sprintf("createAlbum: album created, albumID=%s", albumID))
 
 	return albumID, nil
 }
