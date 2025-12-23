@@ -29,16 +29,22 @@ function handleUpload(files, form) {
 
   // Если album_id уже есть в форме (загрузка в существующий альбом)
   if (albumInput && albumInput.value) {
-    uploadFilesParallel(files, albumInput.value);
+    // sessionID из URL текущей страницы
+    const pathParts = window.location.pathname.split('/').filter(p => p);
+    const sessionID = pathParts[0] || '';
+    uploadFilesParallel(files, albumInput.value, sessionID);
     return;
   }
 
   // Иначе создаем новый альбом на сервере
-  fetch('/create-album', { method: 'POST' })
+  fetch('/create-album', { 
+    method: 'POST',
+    credentials: 'same-origin'
+  })
     .then(response => response.json())
     .then(data => {
-      if (data.album_id) {
-        uploadFilesParallel(files, data.album_id);
+      if (data.album_id && data.session_id) {
+        uploadFilesParallel(files, data.album_id, data.session_id);
       } else {
         throw new Error('Failed to create album');
       }
@@ -50,7 +56,7 @@ function handleUpload(files, form) {
 }
 
 // uploadFilesParallel отправляет файлы параллельно
-function uploadFilesParallel(files, albumID) {
+function uploadFilesParallel(files, albumID, sessionID) {
   const uploadPromises = [];
 
   for (let i = 0; i < files.length; i++) {
@@ -62,7 +68,8 @@ function uploadFilesParallel(files, albumID) {
     uploadPromises.push(
       fetch('/upload', {
         method: 'POST',
-        body: formData
+        body: formData,
+        credentials: 'same-origin'
       }).then(response => {
         if (!response.ok) {
           throw new Error('Upload failed for ' + file.name);
@@ -75,7 +82,6 @@ function uploadFilesParallel(files, albumID) {
   Promise.all(uploadPromises)
     .then(() => {
       // Перенаправляем в альбом
-      const sessionID = getSessionID();
       window.location.href = '/' + sessionID + '/' + albumID;
     })
     .catch(error => {
