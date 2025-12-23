@@ -74,9 +74,9 @@ function uploadFilesParallel(files, albumID) {
 
   Promise.all(uploadPromises)
     .then(() => {
-      // Редирект обрабатывается сервером через uploadHandler
-      // Просто обновляем страницу, сервер сделает редирект
-      window.location.reload();
+      // Перенаправляем в альбом
+      const sessionID = getSessionID();
+      window.location.href = '/' + sessionID + '/' + albumID;
     })
     .catch(error => {
       console.error('Upload error:', error);
