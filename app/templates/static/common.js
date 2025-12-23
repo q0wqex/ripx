@@ -51,7 +51,6 @@ function handleUpload(files, form) {
 
 // uploadFilesParallel отправляет файлы параллельно
 function uploadFilesParallel(files, albumID) {
-  const sessionID = getSessionID();
   const uploadPromises = [];
 
   for (let i = 0; i < files.length; i++) {
@@ -75,8 +74,9 @@ function uploadFilesParallel(files, albumID) {
 
   Promise.all(uploadPromises)
     .then(() => {
-      // После завершения всех загрузок переходим на страницу альбома
-      window.location.href = '/' + sessionID + '/' + albumID;
+      // Редирект обрабатывается сервером через uploadHandler
+      // Просто обновляем страницу, сервер сделает редирект
+      window.location.reload();
     })
     .catch(error => {
       console.error('Upload error:', error);
