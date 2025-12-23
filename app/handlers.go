@@ -237,7 +237,8 @@ func createAlbumHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	SuccessResponse(w, map[string]string{"album_id": albumID})
+	w.Header().Set("Content-Type", "application/json")
+	fmt.Fprintf(w, `{"album_id": "%s"}`, albumID)
 }
 
 // Вспомогательные функции
