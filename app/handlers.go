@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"sync"
 )
 
 // indexHandler обрабатывает главную страницу
@@ -221,6 +222,24 @@ func deleteUserHandler(w http.ResponseWriter, r *http.Request) {
 	SuccessResponse(w, map[string]string{"message": "Profile deleted successfully"})
 }
 
+// createAlbumHandler создает новый альбом и возвращает его ID
+func createAlbumHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	sessionID := getSessionID(w, r)
+
+	albumID, err := createAlbum(sessionID)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error creating album: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	SuccessResponse(w, map[string]string{"album_id": albumID})
+}
+
 // Вспомогательные функции
 
 // getAlbumID получает или создает ID альбома
@@ -252,24 +271,40 @@ func getUploadFiles(r *http.Request) []*multipart.FileHeader {
 	return files
 }
 
-// processUpload обрабатывает загрузку файлов
+// processUpload обрабатывает загрузку файлов параллельно
 func processUpload(files []*multipart.FileHeader, sessionID, albumID string, w http.ResponseWriter) error {
-	return processSequentialUpload(files, sessionID, albumID)
-}
+	var wg sync.WaitGroup
+	errs := make(chan error, len(files))
 
-// processSequentialUpload обрабатывает файлы последовательно
-func processSequentialUpload(files []*multipart.FileHeader, sessionID, albumID string) error {
 	for _, fileHeader := range files {
-		file, err := fileHeader.Open()
-		if err != nil {
-			return fmt.Errorf("error opening file %s: %v", fileHeader.Filename, err)
-		}
-		defer file.Close()
+		wg.Add(1)
+		go func(fh *multipart.FileHeader) {
+			defer wg.Done()
+			file, err := fh.Open()
+			if err != nil {
+				errs <- fmt.Errorf("error opening file %s: %v", fh.Filename, err)
+				return
+			}
+			defer file.Close()
 
-		_, err = saveImage(file, fileHeader, sessionID, albumID)
-		if err != nil {
-			return fmt.Errorf("error saving file %s: %v", fileHeader.Filename, err)
-		}
+			_, err = saveImage(file, fh, sessionID, albumID)
+			if err != nil {
+				errs <- fmt.Errorf("error saving file %s: %v", fh.Filename, err)
+				return
+			}
+		}(fileHeader)
+	}
+
+	wg.Wait()
+	close(errs)
+
+	var uploadErrors []string
+	for err := range errs {
+		uploadErrors = append(uploadErrors, err.Error())
+	}
+
+	if len(uploadErrors) > 0 {
+		return fmt.Errorf("%v", strings.Join(uploadErrors, "; "))
 	}
 	return nil
 }

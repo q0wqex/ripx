@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', function () {
     uploadArea.addEventListener('click', function () { fileInput.click() });
     fileInput.addEventListener('change', function () {
       if (fileInput.files.length > 0) {
-        uploadForm.submit();
+        handleUpload(fileInput.files, uploadForm);
       }
     });
     uploadArea.addEventListener('dragover', function (e) { e.preventDefault(); uploadArea.classList.add('dragover') });
@@ -17,11 +17,84 @@ document.addEventListener('DOMContentLoaded', function () {
       const files = e.dataTransfer.files;
       if (files.length > 0) {
         fileInput.files = files;
-        uploadForm.submit();
+        handleUpload(files, uploadForm);
       }
     });
   }
 });
+
+// handleUpload обрабатывает загрузку файлов
+function handleUpload(files, form) {
+  const albumInput = form.querySelector('input[name="album_id"]');
+
+  // Если album_id уже есть в форме (загрузка в существующий альбом)
+  if (albumInput && albumInput.value) {
+    uploadFilesParallel(files, albumInput.value);
+    return;
+  }
+
+  // Иначе создаем новый альбом на сервере
+  fetch('/create-album', { method: 'POST' })
+    .then(response => response.json())
+    .then(data => {
+      if (data.album_id) {
+        uploadFilesParallel(files, data.album_id);
+      } else {
+        throw new Error('Failed to create album');
+      }
+    })
+    .catch(error => {
+      console.error('Error creating album:', error);
+      alert('Ошибка при создании альбома');
+    });
+}
+
+// uploadFilesParallel отправляет файлы параллельно
+function uploadFilesParallel(files, albumID) {
+  const sessionID = getSessionID();
+  const uploadPromises = [];
+
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i];
+    const formData = new FormData();
+    formData.append('image', file);
+    formData.append('album_id', albumID);
+
+    uploadPromises.push(
+      fetch('/upload', {
+        method: 'POST',
+        body: formData
+      }).then(response => {
+        if (!response.ok) {
+          throw new Error('Upload failed for ' + file.name);
+        }
+        return response;
+      })
+    );
+  }
+
+  Promise.all(uploadPromises)
+    .then(() => {
+      // После завершения всех загрузок переходим на страницу альбома
+      window.location.href = '/' + sessionID + '/' + albumID;
+    })
+    .catch(error => {
+      console.error('Upload error:', error);
+      alert('Ошибка при загрузке: ' + error.message);
+    });
+}
+
+// getSessionID получает ID сессии из cookie
+function getSessionID() {
+  const cookies = document.cookie.split(';');
+  for (let i = 0; i < cookies.length; i++) {
+    const cookie = cookies[i].trim();
+    if (cookie.indexOf('session_id=') === 0) {
+      return cookie.substring('session_id='.length, cookie.length);
+    }
+  }
+  return '';
+}
 
 // HTML шаблон для пустого состояния (используется в deleteImage и album.html)
 const EMPTY_STATE_HTML = `

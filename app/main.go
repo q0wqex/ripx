@@ -87,6 +87,7 @@ func setupRoutes() *http.ServeMux {
 	// API endpoints
 	mux.HandleFunc("/", indexHandler)
 	mux.HandleFunc("/upload", uploadHandler)
+	mux.HandleFunc("/create-album", createAlbumHandler)
 	mux.HandleFunc("/delete-image", deleteImageHandler)
 	mux.HandleFunc("/delete-album", deleteAlbumHandler)
 	mux.HandleFunc("/delete-user", deleteUserHandler)
