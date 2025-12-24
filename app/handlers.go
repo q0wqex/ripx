@@ -86,6 +86,12 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Проверяем, является ли запрос XHR (технический/фоновый)
+	if r.Header.Get("X-Requested-With") == "XMLHttpRequest" || r.Header.Get("Accept") == "application/json" {
+		w.WriteHeader(http.StatusNoContent)
+		return
+	}
+
 	// Перенаправляем на альбом
 	http.Redirect(w, r, "/"+sessionID+"/"+albumID, http.StatusSeeOther)
 }
