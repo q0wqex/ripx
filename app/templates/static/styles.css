@@ -289,13 +289,14 @@ input[type="file"] {
   transform: translate(-50%, -50%);
   max-width: 90vw;
   max-height: 90vh;
-  width: auto;
-  height: auto;
-  z-index: 1000;
+ width: auto;
+ height: auto;
+ z-index: 1000;
   cursor: zoom-out;
-  background: rgba(0, 0, 0, 0.8);
+  background: rgba(0, 0, 0.8);
   padding: 10px;
-  border-radius: 8px;
+  border-radius: 0;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
 }
 
 .image-info {
