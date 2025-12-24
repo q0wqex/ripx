@@ -18,6 +18,9 @@ func albumPath(userID, albumID string) string { return filepath.Join(DataPath, u
 func imagePath(userID, albumID, filename string) string { return filepath.Join(DataPath, userID, albumID, filename) }
 
 
+// Глобальная переменная для хранения общего количества изображений
+var TotalImageCount int
+
 // ImageInfo хранит информацию об изображении
 type ImageInfo struct {
 	Filename string
@@ -61,7 +64,7 @@ func saveImage(file multipart.File, header *multipart.FileHeader, userID, albumI
 	// Создание файла
 	dst, err := os.Create(filePath)
 	if err != nil {
-		return nil, err
+	return nil, err
 	}
 	defer dst.Close()
 
@@ -76,10 +79,13 @@ func saveImage(file multipart.File, header *multipart.FileHeader, userID, albumI
 		return nil, err
 	}
 
+	// Увеличиваем глобальный счетчик изображений
+	TotalImageCount++
+
 	return &ImageInfo{
 		Filename: filename,
 		Path:     filePath,
-		Size:     stat.Size(),
+	Size:     stat.Size(),
 		UserID:   userID,
 		AlbumID:  albumID,
 	}, nil
@@ -147,7 +153,7 @@ func getUserImages(userID, albumID string) ([]ImageInfo, error) {
 		}
 
 		filename := entry.Name()
-		if !IsImageFile(filename) {
+	if !IsImageFile(filename) {
 			continue
 		}
 
@@ -164,6 +170,18 @@ func getUserImages(userID, albumID string) ([]ImageInfo, error) {
 			AlbumID:  albumID,
 		})
 	}
+
+	// Сортировка изображений по времени модификации (старые сверху, новые снизу)
+	sort.Slice(images, func(i, j int) bool {
+		infoI, errI := os.Stat(images[i].Path)
+		infoJ, errJ := os.Stat(images[j].Path)
+		
+		if errI != nil || errJ != nil {
+			return false // если не можем получить статус файла, не меняем порядок
+		}
+		
+		return infoI.ModTime().Before(infoJ.ModTime())
+	})
 
 	return images, nil
 }
@@ -284,10 +302,15 @@ func deleteImage(userID, albumID, filename string) error {
 	filePath := imagePath(userID, albumID, filename)
 
 	if _, err := os.Stat(filePath); os.IsNotExist(err) {
-		return fmt.Errorf("image not found")
+	return fmt.Errorf("image not found")
 	}
 
-	return os.Remove(filePath)
+	err := os.Remove(filePath)
+	if err == nil {
+		// Уменьшаем глобальный счетчик изображений
+		TotalImageCount--
+	}
+	return err
 }
 
 // deleteAlbum удаляет альбом со всеми изображениями
@@ -298,7 +321,15 @@ func deleteAlbum(userID, albumID string) error {
 		return fmt.Errorf("album not found")
 	}
 
-	return os.RemoveAll(albumDir)
+	// Подсчитываем количество изображений в альбоме перед удалением
+	imageCount := countImagesInDir(albumDir)
+
+	err := os.RemoveAll(albumDir)
+	if err == nil {
+		// Уменьшаем глобальный счетчик изображений на количество удаленных изображений
+		TotalImageCount -= imageCount
+	}
+	return err
 }
 
 // deleteUser удаляет все данные пользователя
@@ -309,5 +340,56 @@ func deleteUser(userID string) error {
 		return fmt.Errorf("user directory not found")
 	}
 
-	return os.RemoveAll(userDir)
+	// Подсчитываем количество изображений в пользовательской директории перед удалением
+	totalImages := 0
+	// Рекурсивный обход всей директории пользователя
+	err := filepath.Walk(userDir, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			// Пропускаем ошибки доступа к файлам
+			return nil
+		}
+		
+		// Пропускаем директории
+	if !info.IsDir() {
+			// Проверяем, является ли файл изображением
+			if IsImageFile(info.Name()) {
+				totalImages++
+			}
+		}
+		
+		return nil
+	})
+
+	errRemove := os.RemoveAll(userDir)
+	if errRemove == nil && err == nil {
+		// Уменьшаем глобальный счетчик изображений на количество удаленных изображений
+		TotalImageCount -= totalImages
+	}
+	return errRemove
+}
+
+// countAllFilesInDataPath подсчитывает количество всех файлов в директории data при запуске приложения
+func countAllFilesInDataPath() int {
+	count := 0
+	
+	// Рекурсивный обход всей директории DataPath
+	err := filepath.Walk(DataPath, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			// Пропускаем ошибки доступа к файлам
+			return nil
+		}
+		
+		// Пропускаем директории
+		if !info.IsDir() {
+			count++
+		}
+		
+		return nil
+	})
+	
+	if err != nil {
+		logger.Error(fmt.Sprintf("countAllFilesInDataPath: error walking data directory: %v", err))
+	}
+	
+	return count
 }

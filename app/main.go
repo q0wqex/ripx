@@ -59,6 +59,10 @@ func initializeApp() error {
 		return err
 	}
 
+	// Подсчет общего количества изображений при запуске приложения
+	TotalImageCount = countAllFilesInDataPath()
+	logger.Info(fmt.Sprintf("Total images on startup: %d", TotalImageCount))
+
 	// Проверка доступности директории шаблонов
 	if err := checkTemplates(); err != nil {
 		return err

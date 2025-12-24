@@ -38,13 +38,15 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Подготавливаем данные для шаблона
 	data := struct {
-		Albums    []AlbumInfo
-		HasAlbums bool
-		SessionID string
+		Albums          []AlbumInfo
+		HasAlbums       bool
+		SessionID       string
+		TotalImageCount int
 	}{
-		Albums:    albums,
-		HasAlbums: len(albums) > 0,
-		SessionID: sessionID,
+		Albums:          albums,
+		HasAlbums:       len(albums) > 0,
+		SessionID:       sessionID,
+		TotalImageCount: TotalImageCount,
 	}
 
 	// Отображаем страницу
@@ -131,19 +133,21 @@ func handleAlbumPage(w http.ResponseWriter, r *http.Request, sessionID, albumID 
 	logger.Debug(fmt.Sprintf("handleAlbumPage: images_count=%d", len(images)))
 
 	data := struct {
-		Images         []ImageInfo
-		HasImages      bool
-		SessionID      string
-		OwnerSessionID string
-		AlbumID        string
-		IsOwner        bool
+	Images          []ImageInfo
+		HasImages       bool
+		SessionID       string
+	OwnerSessionID string
+		AlbumID         string
+		IsOwner         bool
+		TotalImageCount int
 	}{
-		Images:         images,
-		HasImages:      len(images) > 0,
-		SessionID:      currentSessionID,
-		OwnerSessionID: sessionID,
-		AlbumID:        albumID,
-		IsOwner:        isOwner,
+		Images:          images,
+		HasImages:       len(images) > 0,
+		SessionID:       currentSessionID,
+		OwnerSessionID:  sessionID,
+		AlbumID:         albumID,
+		IsOwner:         isOwner,
+		TotalImageCount: TotalImageCount,
 	}
 
 	if err := renderTemplate(w, "album.html", data); err != nil {

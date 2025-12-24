@@ -17,8 +17,10 @@ body {
     position: relative;
     overflow-x: hidden;
     display: flex;
-    justify-content: center;
-    align-items: center;
+    flex-direction: column;
+    justify-content: space-between; /* Распределяем элементы по вертикали: контент в центре, футтер внизу */
+    align-items: center; /* Центрируем контент по горизонтали */
+    padding: 20px 0; /* Изменены отступы: равномерные сверху и снизу */
 }
 
 h1 {
@@ -59,9 +61,10 @@ h1 {
     padding: 24px;
     transition: all 0.3s ease;
     max-width: 800px; /* Ограничим ширину для читаемости */
-    margin: 5% auto; /* Центрируем */
+    margin: auto; /* Центрируем элемент по вертикали и горизонтали внутри flex-контейнера */
     position: relative;
     z-index: 1;
+    flex: 0 1 auto; /* Позволяем элементу расти/сжиматься при необходимости */
 }
 
 .glass-card:hover {
@@ -505,4 +508,31 @@ input[type="file"] {
 .upload-count {
   font-size: 14px;
   color: #cccccc
+}
+
+.footer {
+  text-align: center;
+  padding: 20px;
+  margin-top: 20px;
+  color: #666;
+  font-size: 14px;
+  position: static;
+  width: 100%;
+  z-index: 1;
+  display: block;
+}
+
+.footer p {
+  margin: 0;
+  color: #888;
+  font-size: 13px;
+}
+
+.footer a {
+  color: #4CAF50;
+  text-decoration: none;
+}
+
+.footer a:hover {
+  text-decoration: underline;
 }
