@@ -231,13 +231,17 @@ function deleteUser() {
     });
 }
 
-// Функция для переключения увеличения изображения
+// Открывает изображение в оверлее
 function toggleZoom(img) {
-  if (img.classList.contains('zoomed')) {
-    img.classList.remove('zoomed');
-    img.style.cursor = 'zoom-in';
-  } else {
-    img.classList.add('zoomed');
-    img.style.cursor = 'zoom-out';
-  }
+  const overlay = document.getElementById('image-viewer-overlay');
+  const zoomedImage = document.getElementById('zoomed-image-element');
+  
+  zoomedImage.src = img.src;
+  overlay.classList.add('active');
+}
+
+// Закрывает оверлей
+function closeZoom() {
+  const overlay = document.getElementById('image-viewer-overlay');
+  overlay.classList.remove('active');
 }

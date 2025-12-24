@@ -78,7 +78,13 @@
   </div>
   {{end}}
   </div> <!-- Закрывающий тег для glass-card -->
- <script src="/static/common.js"></script>
-</body>
 
-</html>
+  <!-- Оверлей для просмотра изображений -->
+  <div id="image-viewer-overlay" class="image-viewer-overlay" onclick="closeZoom()">
+    <img id="zoomed-image-element">
+  </div>
+
+  <script src="/static/common.js"></script>
+ </body>
+ 
+ </html>
