@@ -85,27 +85,55 @@ function uploadFilesParallel(files, albumID, sessionID) {
 
   for (let i = 0; i < files.length; i++) {
     const file = files[i];
-    const formData = new FormData();
-    formData.append('image', file);
-    formData.append('album_id', albumID);
+    
+    // Конвертируем изображение в WebP перед отправкой
+    convertToWebP(file).then(convertedFile => {
+      const formData = new FormData();
+      formData.append('image', convertedFile);
+      formData.append('album_id', albumID);
 
-    uploadPromises.push(
-      fetch('/upload', {
-        method: 'POST',
-        body: formData,
-        credentials: 'same-origin',
-        headers: {
-          'X-Requested-With': 'XMLHttpRequest'
-        }
-      }).then(response => {
-        if (!response.ok) {
-          throw new Error('Upload failed for ' + file.name);
-        }
-        completed++;
-        progress.update(completed);
-        return response;
-      })
-    );
+      uploadPromises.push(
+        fetch('/upload', {
+          method: 'POST',
+          body: formData,
+          credentials: 'same-origin',
+          headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+          }
+        }).then(response => {
+          if (!response.ok) {
+            throw new Error('Upload failed for ' + convertedFile.name);
+          }
+          completed++;
+          progress.update(completed);
+          return response;
+        })
+      );
+    }).catch(error => {
+      console.error('Error converting image to WebP:', error);
+      // Если конвертация не удалась, отправляем оригинальный файл
+      const formData = new FormData();
+      formData.append('image', file);
+      formData.append('album_id', albumID);
+
+      uploadPromises.push(
+        fetch('/upload', {
+          method: 'POST',
+          body: formData,
+          credentials: 'same-origin',
+          headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+          }
+        }).then(response => {
+          if (!response.ok) {
+            throw new Error('Upload failed for ' + file.name);
+          }
+          completed++;
+          progress.update(completed);
+          return response;
+        })
+      );
+    });
   }
 
   Promise.all(uploadPromises)
@@ -257,4 +285,52 @@ function toggleZoom(img) {
 function closeZoom() {
   const overlay = document.getElementById('image-viewer-overlay');
   overlay.classList.remove('active');
+}
+
+// convertToWebP конвертирует изображение в формат WebP
+function convertToWebP(file) {
+  return new Promise((resolve, reject) => {
+    // Проверяем, является ли файл изображением
+    if (!file.type.startsWith('image/')) {
+      reject(new Error('File is not an image'));
+      return;
+    }
+
+    // Создаем объект FileReader для чтения файла
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      // Создаем элемент img для загрузки изображения
+      const img = new Image();
+      img.onload = function() {
+        // Создаем canvas элемент для конвертации
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+
+        const ctx = canvas.getContext('2d');
+        // Рисуем изображение на canvas
+        ctx.drawImage(img, 0, 0);
+
+        // Конвертируем canvas в WebP формат
+        canvas.toBlob(function(blob) {
+          if (blob) {
+            // Создаем новый File объект с правильным именем и типом
+            const fileName = file.name.replace(/\.[^/.]+$/, '') + '.webp';
+            const webpFile = new File([blob], fileName, { type: 'image/webp' });
+            resolve(webpFile);
+          } else {
+            reject(new Error('Failed to convert image to WebP'));
+          }
+        }, 'image/webp', 0.85); // Качество 85%
+      };
+      img.onerror = function() {
+        reject(new Error('Failed to load image'));
+      };
+      img.src = e.target.result;
+    };
+    reader.onerror = function() {
+      reject(new Error('Failed to read file'));
+    };
+    reader.readAsDataURL(file);
+  });
 }
