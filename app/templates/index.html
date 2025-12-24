@@ -11,7 +11,7 @@
 <body>
   <!-- Blob эффекты фона -->
   <div class="blob blob-1"></div>
- <div class="blob blob-2"></div>
+  <div class="blob blob-2"></div>
 
   <div class="glass-card">
     <h1>ᴩиᴨиᴋᴄ ʀᴇʙᴏʀɴ</h1>
@@ -20,47 +20,48 @@
       <button type="button" class="delete-user-btn" onclick="deleteUser()">удᴀᴧиᴛь ᴨᴩоɸиᴧь</button>
     </div>
 
-  <div class="upload-container">
-    <div class="upload-area" id="uploadArea">
-      <div class="upload-icon">📁</div>
-      <div class="upload-text">ᴨᴇᴩᴇᴛᴀщиᴛᴇ изобᴩᴀжᴇния ᴄюдᴀ</div>
-      <div class="upload-hint">иᴧи нᴀжʍиᴛᴇ дᴧя ʙыбоᴩᴀ ɸᴀйᴧоʙ</div>
+    <div class="upload-container">
+      <div class="upload-area" id="uploadArea">
+        <div class="upload-icon">📁</div>
+        <div class="upload-text">ᴨᴇᴩᴇᴛᴀщиᴛᴇ изобᴩᴀжᴇния ᴄюдᴀ</div>
+        <div class="upload-hint">иᴧи нᴀжʍиᴛᴇ дᴧя ʙыбоᴩᴀ ɸᴀйᴧоʙ</div>
+      </div>
+      <form action="/upload" method="post" enctype="multipart/form-data" id="uploadForm">
+        <input type="file" name="image" accept="image/*" multiple id="fileInput">
+      </form>
     </div>
-    <form action="/upload" method="post" enctype="multipart/form-data" id="uploadForm">
-      <input type="file" name="image" accept="image/*" multiple id="fileInput">
-    </form>
-  </div>
 
-  <!-- Индикатор загрузки -->
-  <div class="upload-overlay" id="uploadOverlay">
-    <div class="upload-progress">
-      <div class="upload-spinner"></div>
-      <div class="upload-status" id="uploadStatus">зᴀᴦᴩузᴋᴀ...</div>
-      <div class="upload-count" id="uploadCount"></div>
+    <!-- Индикатор загрузки -->
+    <div class="upload-overlay" id="uploadOverlay">
+      <div class="upload-progress">
+        <div class="upload-spinner"></div>
+        <div class="upload-status" id="uploadStatus">зᴀᴦᴩузᴋᴀ...</div>
+        <div class="upload-count" id="uploadCount"></div>
+      </div>
     </div>
-  </div>
 
-  <!-- Список существующих альбомов -->
-  {{if .HasAlbums}}
-  <div class="albums-container">
-    <div class="albums-title">ʙᴀɯи ᴀᴧьбоʍы ᴨод зᴀщиᴛой (нᴇᴛ)</div>
-    <div class="albums-list">
-      {{range .Albums}}
-      <a href="/{{$.SessionID}}/{{.ID}}" class="album-link album-link-block">
-        <div class="album-item">
-          <div style="font-weight:bold;color:#333;">{{.Name}}</div>
-          <div class="album-count">{{.ImageCount}} изобᴩᴀжᴇний</div>
-          <div class="album-count">ᴄоздᴀн: {{.CreatedAt.Format "02.01.2006 15:04"}}</div>
-        </div>
-      </a>
-      {{end}}
+    <!-- Список существующих альбомов -->
+    {{if .HasAlbums}}
+    <div class="albums-container">
+      <div class="albums-title">ʙᴀɯи ᴀᴧьбоʍы ᴨод зᴀщиᴛой (нᴇᴛ)</div>
+      <div class="albums-list">
+        {{range .Albums}}
+        <a href="/{{$.SessionID}}/{{.ID}}" class="album-link album-link-block">
+          <div class="album-item">
+            <div style="font-weight:bold;color:#333;">{{.Name}}</div>
+            <div class="album-count">{{.ImageCount}} изобᴩᴀжᴇний</div>
+            <div class="album-count">ᴄоздᴀн: {{.CreatedAt.Format "02.01.2006 15:04"}}</div>
+          </div>
+        </a>
+        {{end}}
+      </div>
     </div>
-  </div>
-  {{end}}
+    {{end}}
 
   </div> <!-- Закрывающий тег для glass-card -->
   <footer class="footer">
-    <p>created with ❤️ by q0wqex</p>
+    <p>ʙᴄᴇᴦо изобᴩᴀжᴇний нᴀ ᴄᴇᴩʙиᴄᴇ: {{.TotalImageCount}}</p>
+    <p>ᴄʀᴇᴀᴛᴇᴅ ᴡɪᴛʜ ❤️ ʙʏ ǫ0ᴡǫᴇx</p>
   </footer>
   <script src="/static/common.js"></script>
 </body>

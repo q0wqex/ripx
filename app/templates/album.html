@@ -11,7 +11,7 @@
 <body>
   <!-- Blob эффекты фона -->
   <div class="blob blob-1"></div>
- <div class="blob blob-2"></div>
+  <div class="blob blob-2"></div>
 
   <div class="glass-card">
     <div class="header">
@@ -28,66 +28,68 @@
       </div>
     </div>
 
-  {{if .IsOwner}}
-  <div class="upload-container">
-    <div class="upload-area" id="uploadArea">
-      <div class="upload-icon">📁</div>
-      <div class="upload-text">ᴨᴇᴩᴇᴛᴀщиᴛᴇ изобᴩᴀжᴇния ᴄюдᴀ</div>
-      <div class="upload-hint">иᴧи нᴀжʍиᴛᴇ дᴧя ʙыбоᴩᴀ ɸᴀйᴧоʙ</div>
-    </div>
-    <form action="/upload" method="post" enctype="multipart/form-data" id="imageUploadForm">
-      <input type="hidden" name="album_id" value="{{.AlbumID}}">
-      <input type="file" name="image" accept="image/*" multiple id="fileInput">
-    </form>
-  </div>
-  {{end}}
-
-  <!-- Индикатор загрузки -->
-  <div class="upload-overlay" id="uploadOverlay">
-    <div class="upload-progress">
-      <div class="upload-spinner"></div>
-      <div class="upload-status" id="uploadStatus">зᴀᴦᴩузᴋᴀ...</div>
-      <div class="upload-count" id="uploadCount"></div>
-    </div>
-  </div>
-
-  {{if .HasImages}}
-  <div class="image-grid" id="imageGrid">
-    {{range .Images}}
-    <div class="image-item">
-      <img src="/{{$.OwnerSessionID}}/{{$.AlbumID}}/{{.Filename}}" alt="{{.Filename}}" class="zoomable-image" onclick="toggleZoom(this)">
-      <div class="image-info">
-        <div class="image-name">{{.Filename}}</div>
-        <div>
-          <button class="copy-btn"
-            onclick="copyUrl('{{$.OwnerSessionID}}','{{$.AlbumID}}','{{.Filename}}',this)">ᴋоᴨиᴩоʙᴀᴛь ᴜʀʟ</button>
-          {{if $.IsOwner}}
-          <button class="delete-btn"
-            onclick="deleteImage('{{$.SessionID}}','{{$.AlbumID}}','{{.Filename}}',this)">удᴀᴧиᴛь</button>
-          {{end}}
-        </div>
+    {{if .IsOwner}}
+    <div class="upload-container">
+      <div class="upload-area" id="uploadArea">
+        <div class="upload-icon">📁</div>
+        <div class="upload-text">ᴨᴇᴩᴇᴛᴀщиᴛᴇ изобᴩᴀжᴇния ᴄюдᴀ</div>
+        <div class="upload-hint">иᴧи нᴀжʍиᴛᴇ дᴧя ʙыбоᴩᴀ ɸᴀйᴧоʙ</div>
       </div>
+      <form action="/upload" method="post" enctype="multipart/form-data" id="imageUploadForm">
+        <input type="hidden" name="album_id" value="{{.AlbumID}}">
+        <input type="file" name="image" accept="image/*" multiple id="fileInput">
+      </form>
     </div>
     {{end}}
-  </div>
-  {{else}}
-  <div class="empty-state">
-    <div class="empty-icon">📷</div>
-    <div class="empty-text">у ʙᴀᴄ ᴨоᴋᴀ нᴇᴛ зᴀᴦᴩужᴇнных изобᴩᴀжᴇний</div>
-    <a href="/" class="empty-link">зᴀᴦᴩузиᴛь ᴨᴇᴩʙоᴇ изобᴩᴀжᴇниᴇ</a>
-  </div>
-  {{end}}
+
+    <!-- Индикатор загрузки -->
+    <div class="upload-overlay" id="uploadOverlay">
+      <div class="upload-progress">
+        <div class="upload-spinner"></div>
+        <div class="upload-status" id="uploadStatus">зᴀᴦᴩузᴋᴀ...</div>
+        <div class="upload-count" id="uploadCount"></div>
+      </div>
+    </div>
+
+    {{if .HasImages}}
+    <div class="image-grid" id="imageGrid">
+      {{range .Images}}
+      <div class="image-item">
+        <img src="/{{$.OwnerSessionID}}/{{$.AlbumID}}/{{.Filename}}" alt="{{.Filename}}" class="zoomable-image"
+          onclick="toggleZoom(this)">
+        <div class="image-info">
+          <div class="image-name">{{.Filename}}</div>
+          <div>
+            <button class="copy-btn"
+              onclick="copyUrl('{{$.OwnerSessionID}}','{{$.AlbumID}}','{{.Filename}}',this)">ᴋоᴨиᴩоʙᴀᴛь ᴜʀʟ</button>
+            {{if $.IsOwner}}
+            <button class="delete-btn"
+              onclick="deleteImage('{{$.SessionID}}','{{$.AlbumID}}','{{.Filename}}',this)">удᴀᴧиᴛь</button>
+            {{end}}
+          </div>
+        </div>
+      </div>
+      {{end}}
+    </div>
+    {{else}}
+    <div class="empty-state">
+      <div class="empty-icon">📷</div>
+      <div class="empty-text">у ʙᴀᴄ ᴨоᴋᴀ нᴇᴛ зᴀᴦᴩужᴇнных изобᴩᴀжᴇний</div>
+      <a href="/" class="empty-link">зᴀᴦᴩузиᴛь ᴨᴇᴩʙоᴇ изобᴩᴀжᴇниᴇ</a>
+    </div>
+    {{end}}
   </div> <!-- Закрывающий тег для glass-card -->
 
   <!-- Оверлей для просмотра изображений -->
   <footer class="footer">
-    <p>created with ❤️ by q0wqex</p>
+    <p>ʙᴄᴇᴦо изобᴩᴀжᴇний нᴀ ᴄᴇᴩʙиᴄᴇ: {{.TotalImageCount}}</p>
+    <p>ᴄʀᴇᴀᴛᴇᴅ ᴡɪᴛʜ ❤️ ʙʏ ǫ0ᴡǫᴇx</p>
   </footer>
   <div id="image-viewer-overlay" class="image-viewer-overlay" onclick="closeZoom()">
     <div id="zoomed-image-element"></div>
   </div>
 
   <script src="/static/common.js"></script>
- </body>
- 
- </html>
+</body>
+
+</html>
