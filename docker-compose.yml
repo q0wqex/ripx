@@ -7,4 +7,11 @@ services:
       - "8000:8000"
     volumes:
       - ./data:/data
+      - /usr/share/zoneinfo/Europe/Moscow:/etc/localtime:ro
+    networks:
+      - edge-network
     restart: unless-stopped
+
+networks:
+  edge-network:
+    external: true
