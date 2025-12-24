@@ -1,12 +1,17 @@
-version: '3.8'
-
 services:
-  imagehost:
-    build: .
+  ripx:
+    image: ghcr.io/project-absolute/ripx:dev
+    hostname: ripx
+    container_name: ripx
     ports:
-      - "8080:8080"
+      - "8000:8000"
     volumes:
       - ./data:/data
+      - /usr/share/zoneinfo/Europe/Moscow:/etc/localtime:ro
+    networks:
+      - edge-network
     restart: unless-stopped
-    environment:
-      - GIN_MODE=release
+
+networks:
+  edge-network:
+    external: true

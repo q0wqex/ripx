@@ -1,56 +1,65 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Хостинг изображений</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        .upload-area {
-            border: 2px dashed #ccc;
-            border-radius: 10px;
-            padding: 40px;
-            text-align: center;
-            margin: 20px 0;
-        }
-        .upload-area:hover {
-            border-color: #999;
-        }
-        input[type="file"] {
-            margin: 10px 0;
-        }
-        button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ᴩиᴨиᴋᴄ ʀᴇʙᴏʀɴ</title>
+  <link rel="stylesheet" href="/static/styles.css">
 </head>
+
 <body>
-    <h1>Хостинг изображений</h1>
-    <p>Загрузите изображения для быстрого обмена</p>
-    
-    <div class="upload-area" id="uploadArea">
-        <p>Перетащите изображения сюда или нажмите для выбора</p>
-        <form action="/upload" method="post" enctype="multipart/form-data">
-            <input type="file" name="image" accept="image/*" multiple id="fileInput">
-            <button type="submit">Загрузить</button>
-        </form>
+  <!-- Blob эффекты фона -->
+  <div class="blob blob-1"></div>
+ <div class="blob blob-2"></div>
+
+  <div class="glass-card">
+    <h1>ᴩиᴨиᴋᴄ ʀᴇʙᴏʀɴ</h1>
+    <div class="header-actions">
+      <p>жиʙой, дᴀжᴇ ᴋоᴦдᴀ ᴧᴇжиᴛ</p>
+      <button type="button" class="delete-user-btn" onclick="deleteUser()">удᴀᴧиᴛь ᴨᴩоɸиᴧь</button>
     </div>
-    
-    <script>
-        // Базовый JavaScript для drag & drop будет добавлен в следующей фазе
-    </script>
+
+  <div class="upload-container">
+    <div class="upload-area" id="uploadArea">
+      <div class="upload-icon">📁</div>
+      <div class="upload-text">ᴨᴇᴩᴇᴛᴀщиᴛᴇ изобᴩᴀжᴇния ᴄюдᴀ</div>
+      <div class="upload-hint">иᴧи нᴀжʍиᴛᴇ дᴧя ʙыбоᴩᴀ ɸᴀйᴧоʙ</div>
+    </div>
+    <form action="/upload" method="post" enctype="multipart/form-data" id="uploadForm">
+      <input type="file" name="image" accept="image/*" multiple id="fileInput">
+    </form>
+  </div>
+
+  <!-- Индикатор загрузки -->
+  <div class="upload-overlay" id="uploadOverlay">
+    <div class="upload-progress">
+      <div class="upload-spinner"></div>
+      <div class="upload-status" id="uploadStatus">зᴀᴦᴩузᴋᴀ...</div>
+      <div class="upload-count" id="uploadCount"></div>
+    </div>
+  </div>
+
+  <!-- Список существующих альбомов -->
+  {{if .HasAlbums}}
+  <div class="albums-container">
+    <div class="albums-title">ʙᴀɯи ᴀᴧьбоʍы ᴨод зᴀщиᴛой (нᴇᴛ)</div>
+    <div class="albums-list">
+      {{range .Albums}}
+      <a href="/{{$.SessionID}}/{{.ID}}" class="album-link album-link-block">
+        <div class="album-item">
+          <div style="font-weight:bold;color:#333;">{{.Name}}</div>
+          <div class="album-count">{{.ImageCount}} изобᴩᴀжᴇний</div>
+          <div class="album-count">ᴄоздᴀн: {{.CreatedAt.Format "02.01.2006 15:04"}}</div>
+        </div>
+      </a>
+      {{end}}
+    </div>
+  </div>
+  {{end}}
+
+  </div> <!-- Закрывающий тег для glass-card -->
+ <script src="/static/common.js"></script>
 </body>
+
 </html>

@@ -1,80 +1,90 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Мой альбом изображений</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        .image-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 15px;
-        }
-        .image-item {
-            position: relative;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            overflow: hidden;
-        }
-        .image-item img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-        }
-        .image-controls {
-            padding: 10px;
-            background-color: #f5f5f5;
-        }
-        .copy-btn, .delete-btn {
-            padding: 5px 10px;
-            margin: 2px;
-            border: none;
-            border-radius: 3px;
-            cursor: pointer;
-        }
-        .copy-btn {
-            background-color: #2196F3;
-            color: white;
-        }
-        .delete-btn {
-            background-color: #f44336;
-            color: white;
-        }
-        .upload-more {
-            display: inline-block;
-            margin-top: 20px;
-            padding: 10px 20px;
-            background-color: #4CAF50;
-            color: white;
-            text-decoration: none;
-            border-radius: 4px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ᴩиᴨиᴋᴄ ʀᴇʙᴏʀɴ</title>
+  <link rel="stylesheet" href="/static/styles.css">
 </head>
+
 <body>
+  <!-- Blob эффекты фона -->
+  <div class="blob blob-1"></div>
+ <div class="blob blob-2"></div>
+
+  <div class="glass-card">
     <div class="header">
-        <h1>Мой альбом изображений</h1>
-        <a href="/" class="upload-more">Загрузить еще</a>
+      <h1>ᴀᴧьбоʍ: {{.AlbumID}}</h1>
+      <div>
+        <a href="/" class="upload-more">нᴀ ᴦᴧᴀʙную</a>
+        {{if .IsOwner}}
+        <form action="/delete-album" method="POST" class="inline-form"
+          onsubmit="return confirm('Вы уверены, что хотите удалить весь альбом со всеми изображениями?')">
+          <input type="hidden" name="album_id" value="{{.AlbumID}}">
+          <button type="submit" class="delete-album-btn">удᴀᴧиᴛь ᴀᴧьбоʍ</button>
+        </form>
+        {{end}}
+      </div>
     </div>
-    
-    <div class="image-grid" id="imageGrid">
-        <!-- Изображения будут добавлены динамически в следующей фазе -->
+
+  {{if .IsOwner}}
+  <div class="upload-container">
+    <div class="upload-area" id="uploadArea">
+      <div class="upload-icon">📁</div>
+      <div class="upload-text">ᴨᴇᴩᴇᴛᴀщиᴛᴇ изобᴩᴀжᴇния ᴄюдᴀ</div>
+      <div class="upload-hint">иᴧи нᴀжʍиᴛᴇ дᴧя ʙыбоᴩᴀ ɸᴀйᴧоʙ</div>
     </div>
-    
-    <script>
-        // Базовый JavaScript для управления изображениями будет добавлен в следующей фазе
-    </script>
-</body>
-</html>
+    <form action="/upload" method="post" enctype="multipart/form-data" id="imageUploadForm">
+      <input type="hidden" name="album_id" value="{{.AlbumID}}">
+      <input type="file" name="image" accept="image/*" multiple id="fileInput">
+    </form>
+  </div>
+  {{end}}
+
+  <!-- Индикатор загрузки -->
+  <div class="upload-overlay" id="uploadOverlay">
+    <div class="upload-progress">
+      <div class="upload-spinner"></div>
+      <div class="upload-status" id="uploadStatus">зᴀᴦᴩузᴋᴀ...</div>
+      <div class="upload-count" id="uploadCount"></div>
+    </div>
+  </div>
+
+  {{if .HasImages}}
+  <div class="image-grid" id="imageGrid">
+    {{range .Images}}
+    <div class="image-item">
+      <img src="/{{$.OwnerSessionID}}/{{$.AlbumID}}/{{.Filename}}" alt="{{.Filename}}" class="zoomable-image" onclick="toggleZoom(this)">
+      <div class="image-info">
+        <div class="image-name">{{.Filename}}</div>
+        <div>
+          <button class="copy-btn"
+            onclick="copyUrl('{{$.OwnerSessionID}}','{{$.AlbumID}}','{{.Filename}}',this)">ᴋоᴨиᴩоʙᴀᴛь ᴜʀʟ</button>
+          {{if $.IsOwner}}
+          <button class="delete-btn"
+            onclick="deleteImage('{{$.SessionID}}','{{$.AlbumID}}','{{.Filename}}',this)">удᴀᴧиᴛь</button>
+          {{end}}
+        </div>
+      </div>
+    </div>
+    {{end}}
+  </div>
+  {{else}}
+  <div class="empty-state">
+    <div class="empty-icon">📷</div>
+    <div class="empty-text">у ʙᴀᴄ ᴨоᴋᴀ нᴇᴛ зᴀᴦᴩужᴇнных изобᴩᴀжᴇний</div>
+    <a href="/" class="empty-link">зᴀᴦᴩузиᴛь ᴨᴇᴩʙоᴇ изобᴩᴀжᴇниᴇ</a>
+  </div>
+  {{end}}
+  </div> <!-- Закрывающий тег для glass-card -->
+
+  <!-- Оверлей для просмотра изображений -->
+  <div id="image-viewer-overlay" class="image-viewer-overlay" onclick="closeZoom()">
+    <div id="zoomed-image-element"></div>
+  </div>
+
+  <script src="/static/common.js"></script>
+ </body>
+ 
+ </html>

@@ -1,4 +1,7 @@
 .kilocode/
-PLAN.md
+.data/
 .editorconfig
 .kilocodemodes
+ripx
+app.exe
+app/ripx.exe

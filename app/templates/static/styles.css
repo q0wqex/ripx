@@ -1,0 +1,508 @@
+/* Подключение шрифтов Montserrat и Unbounded из Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&family=Unbounded:wght@600&display=swap');
+
+body {
+    background-color: #161b23;
+    /* Сетка на фоне */
+    background-image:
+        linear-gradient(to right, rgba(128, 128, 128, 0.05) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(128, 128, 128, 0.05) 1px, transparent 1px);
+    background-size: 60px;
+    background-attachment: fixed;
+    font-family: 'Montserrat', sans-serif;
+    color: #c9d1d9; /* Светло-серый текст */
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+h1 {
+    font-family: 'Unbounded', sans-serif;
+    color: #ffffff;
+    text-align: center;
+}
+
+.blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(60px); /* Ключевое свойство для размытия */
+    opacity: 0.15;
+    z-index: -1; /* Чтобы были под контентом */
+}
+
+.blob-1 {
+    width: 500px;
+    height: 500px;
+    top: 10%;
+    left: 10%;
+    background: radial-gradient(circle, #9775fa 0%, transparent 50%);
+}
+
+.blob-2 {
+    width: 600px;
+    height: 600px;
+    bottom: 10%;
+    right: 10%;
+    background: radial-gradient(circle, #22d3ee 0%, transparent 50%);
+}
+
+.glass-card {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(10px); /* Самое важное свойство */
+    border-radius: 16px; /* В проекте используется 'lg', что примерно равно 16px */
+    padding: 24px;
+    transition: all 0.3s ease;
+    max-width: 800px; /* Ограничим ширину для читаемости */
+    margin: 5% auto; /* Центрируем */
+    position: relative;
+    z-index: 1;
+}
+
+.glass-card:hover {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(34, 211, 238, 0.3); /* Акцентный цвет при наведении */
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+.header-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px
+}
+
+.inline-form {
+  display: inline;
+}
+
+.album-link-block {
+  text-decoration: none;
+  display: block;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    padding: 24px;
+    transition: all 0.3s ease;
+}
+
+.header:hover {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(34, 211, 238, 0.3);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+.header h1 {
+    margin: 0;
+    text-align: left;
+    font-family: 'Montserrat', sans-serif;
+    color: #c9d1d9;
+}
+
+.upload-container {
+    margin: 30px 0
+}
+
+.upload-area {
+    border: 3px dashed rgba(255, 255, 255, 0.2);
+    border-radius: 16px;
+    padding: 40px;
+    text-align: center;
+    margin: 20px 0;
+    background: rgba(255, 255, 255, 0.02);
+    backdrop-filter: blur(10px);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.upload-area:hover {
+    border-color: rgba(34, 211, 238, 0.5);
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.upload-area.dragover {
+    border-color: #4CAF50;
+    background: rgba(76, 175, 80, 0.1);
+}
+
+.upload-icon {
+  font-size: 48px;
+  color: #777;
+  margin-bottom: 15px
+}
+
+.upload-text {
+  font-size: 18px;
+  color: #cccccc;
+  margin-bottom: 15px
+}
+
+.upload-hint {
+  font-size: 14px;
+  color: #999
+}
+
+form {
+  margin-top: 20px
+}
+
+input[type="file"] {
+  display: none
+}
+
+.albums-container {
+  margin: 30px 0
+}
+
+.albums-title {
+  font-size: 20px;
+  color: #ffffff;
+  margin-bottom: 15px
+}
+
+.albums-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px
+}
+
+.album-item {
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.02);
+    backdrop-filter: blur(10px);
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.album-link:hover .album-item {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(34, 211, 238, 0.3);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.album-link {
+  text-decoration: none;
+  color: #ffffff
+}
+
+.album-link:hover {
+  color: #ffffff
+}
+
+.album-count {
+  font-size: 14px;
+  color: #cccccc;
+  margin-top: 5px
+}
+
+.delete-user-btn {
+    background: rgba(211, 47, 47, 0.2);
+    border: 1px solid rgba(21, 47, 47, 0.4);
+    color: #ff6b6b;
+    padding: 8px 16px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-family: 'Montserrat', sans-serif;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+    font-size: 14px;
+}
+
+.delete-user-btn:hover {
+    background: rgba(211, 47, 47, 0.3);
+    border-color: rgba(211, 47, 47, 0.6);
+    color: #ffffff;
+}
+
+.upload-more {
+    background: rgba(76, 175, 80, 0.2);
+    border: 1px solid rgba(76, 175, 80, 0.4);
+    color: #4CAF50;
+    padding: 10px 20px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-family: 'Montserrat', sans-serif;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+}
+
+.upload-more:hover {
+    background: rgba(76, 175, 80, 0.3);
+    border-color: rgba(76, 175, 80, 0.6);
+    color: #ffffff;
+}
+
+.image-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 20px
+}
+
+.image-item {
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.02);
+    backdrop-filter: blur(10px);
+    display: flex;
+    flex-direction: column;
+    transition: all 0.3s ease;
+}
+
+.image-item:hover {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(34, 211, 238, 0.3);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.image-item img {
+ width: 100%;
+  height: auto;
+  display: block;
+  cursor: zoom-in;
+  transition: transform 0.3s ease;
+}
+
+/* Стили для оверлея просмотра изображений */
+.image-viewer-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(5px);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+  cursor: zoom-out;
+}
+
+.image-viewer-overlay.active {
+  display: flex;
+}
+
+#zoomed-image-element {
+  max-width: 90vw;
+  max-height: 90vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#zoomed-image-element img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.7);
+}
+
+.image-info {
+  padding: 15px
+}
+
+.image-name {
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis
+}
+
+.copy-btn {
+    background: rgba(33, 150, 243, 0.2);
+    border: 1px solid rgba(33, 150, 243, 0.4);
+    color: #2196F3;
+    padding: 5px 10px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-family: 'Montserrat', sans-serif;
+    transition: all 0.2s ease;
+    font-size: 12px;
+}
+
+.copy-btn:hover {
+    background: rgba(33, 150, 243, 0.3);
+    border-color: rgba(33, 150, 243, 0.6);
+    color: #ffffff;
+}
+
+.copy-btn.copied {
+    background: rgba(76, 175, 80, 0.3);
+    border-color: rgba(76, 175, 80, 0.6);
+    color: #ffffff;
+}
+
+.delete-btn {
+    background: rgba(244, 67, 54, 0.2);
+    border: 1px solid rgba(244, 67, 54, 0.4);
+    color: #f44336;
+    padding: 5px 10px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-family: 'Montserrat', sans-serif;
+    transition: all 0.2s ease;
+    font-size: 12px;
+    margin-left: 5px;
+}
+
+.delete-btn:hover {
+    background: rgba(24, 67, 54, 0.3);
+    border-color: rgba(244, 67, 54, 0.6);
+    color: #ffffff;
+}
+
+.delete-album-btn {
+    background: rgba(255, 87, 34, 0.2);
+    border: 1px solid rgba(25, 87, 34, 0.4);
+    color: #ff5722;
+    padding: 10px 20px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-family: 'Montserrat', sans-serif;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+}
+
+.delete-album-btn:hover {
+    background: rgba(255, 87, 34, 0.3);
+    border-color: rgba(255, 87, 34, 0.6);
+    color: #ffffff;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    transition: all 0.3s ease;
+}
+
+.empty-state:hover {
+    background: rgba(25, 255, 255, 0.04);
+    border-color: rgba(34, 211, 238, 0.3);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.empty-icon {
+  font-size: 64px;
+  margin-bottom: 20px;
+  color: #777
+}
+
+.empty-text {
+  font-size: 18px;
+  color: #cccccc;
+  margin-bottom: 20px
+}
+
+.empty-link {
+    background: rgba(76, 175, 80, 0.2);
+    border: 1px solid rgba(76, 175, 80, 0.4);
+    color: #4CAF50;
+    padding: 10px 20px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-family: 'Montserrat', sans-serif;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+}
+
+.empty-link:hover {
+    background: rgba(76, 175, 80, 0.3);
+    border-color: rgba(76, 175, 80, 0.6);
+    color: #ffffff;
+}
+
+@media(max-width:768px) {
+  .header {
+    flex-direction: column;
+    gap: 15px;
+    text-align: center
+  }
+  
+  .header h1 {
+    text-align: center
+  }
+}
+
+/* Индикатор загрузки */
+.upload-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center
+}
+
+.upload-overlay.active {
+    display: flex
+}
+
+.upload-progress {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(25, 255, 255, 0.08);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    padding: 40px;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.upload-spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid #555;
+  border-top-color: #4CAF50;
+  border-radius: 50%;
+  margin: 0 auto 20px;
+  animation: spin 1s linear infinite
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg) }
+}
+
+.upload-status {
+  font-size: 18px;
+  color: #ffffff;
+  margin-bottom: 10px
+}
+
+.upload-count {
+  font-size: 14px;
+  color: #cccccc
+}
