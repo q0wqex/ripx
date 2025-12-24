@@ -18,9 +18,9 @@ body {
     overflow-x: hidden;
     display: flex;
     flex-direction: column;
+    justify-content: space-between; /* Распределяем элементы по вертикали: контент в центре, футтер внизу */
     align-items: center; /* Центрируем контент по горизонтали */
-    padding-top: 20px; /* Добавлен отступ сверху */
-    padding-bottom: 20px; /* Уменьшен отступ снизу */
+    padding: 20px 0; /* Изменены отступы: равномерные сверху и снизу */
 }
 
 h1 {
@@ -61,7 +61,7 @@ h1 {
     padding: 24px;
     transition: all 0.3s ease;
     max-width: 800px; /* Ограничим ширину для читаемости */
-    margin: 0 auto 20px; /* Добавлен отступ снизу для разделения с футером */
+    margin: auto; /* Центрируем элемент по вертикали и горизонтали внутри flex-контейнера */
     position: relative;
     z-index: 1;
     flex: 0 1 auto; /* Позволяем элементу расти/сжиматься при необходимости */
