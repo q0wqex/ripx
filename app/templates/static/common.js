@@ -82,52 +82,45 @@ function uploadFilesParallel(files, albumID, sessionID) {
   let completed = 0;
   const progress = showUploadProgress(total);
   
-  // Сначала конвертируем все файлы, затем отправляем
-  const conversionPromises = [];
-  for (let i = 0; i < files.length; i++) {
-    conversionPromises.push(
-      convertToWebP(files[i])
-        .then(convertedFile => ({ file: convertedFile, originalFile: files[i] }))
-        .catch(error => {
-          console.error('Error converting image to WebP:', error);
-          // Если конвертация не удалась, возвращаем оригинальный файл
-          return { file: files[i], originalFile: files[i] };
-        })
-    );
-  }
+  // Создаем промисы для каждой операции конвертации и загрузки
+ const uploadPromises = [];
   
-  // После завершения всех конвертаций отправляем файлы
-  Promise.all(conversionPromises)
-    .then(convertedFiles => {
-      const uploadPromises = [];
-      
-      for (let i = 0; i < convertedFiles.length; i++) {
-        const { file, originalFile } = convertedFiles[i];
+  for (let i = 0; i < files.length; i++) {
+    // Для каждого файла создаем цепочку: конвертация -> загрузка
+    const uploadPromise = convertToWebP(files[i])
+      .then(convertedFile => ({ file: convertedFile, originalFile: files[i] }))
+      .catch(error => {
+        console.error('Error converting image to WebP:', error);
+        // Если конвертация не удалась, возвращаем оригинальный файл
+        return { file: files[i], originalFile: files[i] };
+      })
+      .then(({ file, originalFile }) => {
         const formData = new FormData();
         formData.append('image', file);
         formData.append('album_id', albumID);
 
-        uploadPromises.push(
-          fetch('/upload', {
-            method: 'POST',
-            body: formData,
-            credentials: 'same-origin',
-            headers: {
-              'X-Requested-With': 'XMLHttpRequest'
-            }
-          }).then(response => {
-            if (!response.ok) {
-              throw new Error('Upload failed for ' + file.name);
-            }
-            completed++;
-            progress.update(completed);
-            return response;
-          })
-        );
-      }
-      
-      return Promise.all(uploadPromises);
-    })
+        return fetch('/upload', {
+          method: 'POST',
+          body: formData,
+          credentials: 'same-origin',
+          headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+          }
+        }).then(response => {
+          if (!response.ok) {
+            throw new Error('Upload failed for ' + file.name);
+          }
+          completed++;
+          progress.update(completed);
+          return response;
+        });
+      });
+    
+    uploadPromises.push(uploadPromise);
+  }
+  
+  // Ждем завершения всех операций загрузки
+  Promise.all(uploadPromises)
     .then(() => {
       progress.hide();
       // Перенаправляем в альбом
