@@ -81,53 +81,46 @@ function uploadFilesParallel(files, albumID, sessionID) {
   const total = files.length;
   let completed = 0;
   const progress = showUploadProgress(total);
-  
-  // Сначала конвертируем все файлы, затем отправляем
-  const conversionPromises = [];
+
+  // Создаем промисы для каждой операции конвертации и загрузки
+  const uploadPromises = [];
+
   for (let i = 0; i < files.length; i++) {
-    conversionPromises.push(
-      convertToWebP(files[i])
-        .then(convertedFile => ({ file: convertedFile, originalFile: files[i] }))
-        .catch(error => {
-          console.error('Error converting image to WebP:', error);
-          // Если конвертация не удалась, возвращаем оригинальный файл
-          return { file: files[i], originalFile: files[i] };
-        })
-    );
-  }
-  
-  // После завершения всех конвертаций отправляем файлы
-  Promise.all(conversionPromises)
-    .then(convertedFiles => {
-      const uploadPromises = [];
-      
-      for (let i = 0; i < convertedFiles.length; i++) {
-        const { file, originalFile } = convertedFiles[i];
+    // Для каждого файла создаем цепочку: конвертация -> загрузка
+    const uploadPromise = convertToWebP(files[i])
+      .then(convertedFile => ({ file: convertedFile, originalFile: files[i] }))
+      .catch(error => {
+        console.error('Error converting image to WebP:', error);
+        // Если конвертация не удалась, возвращаем оригинальный файл
+        return { file: files[i], originalFile: files[i] };
+      })
+      .then(({ file, originalFile }) => {
         const formData = new FormData();
         formData.append('image', file);
         formData.append('album_id', albumID);
 
-        uploadPromises.push(
-          fetch('/upload', {
-            method: 'POST',
-            body: formData,
-            credentials: 'same-origin',
-            headers: {
-              'X-Requested-With': 'XMLHttpRequest'
-            }
-          }).then(response => {
-            if (!response.ok) {
-              throw new Error('Upload failed for ' + file.name);
-            }
-            completed++;
-            progress.update(completed);
-            return response;
-          })
-        );
-      }
-      
-      return Promise.all(uploadPromises);
-    })
+        return fetch('/upload', {
+          method: 'POST',
+          body: formData,
+          credentials: 'same-origin',
+          headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+          }
+        }).then(response => {
+          if (!response.ok) {
+            throw new Error('Upload failed for ' + file.name);
+          }
+          completed++;
+          progress.update(completed);
+          return response;
+        });
+      });
+
+    uploadPromises.push(uploadPromise);
+  }
+
+  // Ждем завершения всех операций загрузки
+  Promise.all(uploadPromises)
     .then(() => {
       progress.hide();
       // Перенаправляем в альбом
@@ -289,10 +282,10 @@ function convertToWebP(file) {
 
     // Создаем объект FileReader для чтения файла
     const reader = new FileReader();
-    reader.onload = function(e) {
+    reader.onload = function (e) {
       // Создаем элемент img для загрузки изображения
       const img = new Image();
-      img.onload = function() {
+      img.onload = function () {
         // Создаем canvas элемент для конвертации
         const canvas = document.createElement('canvas');
         canvas.width = img.width;
@@ -303,7 +296,7 @@ function convertToWebP(file) {
         ctx.drawImage(img, 0, 0);
 
         // Конвертируем canvas в WebP формат
-        canvas.toBlob(function(blob) {
+        canvas.toBlob(function (blob) {
           if (blob) {
             // Создаем новый File объект с правильным именем и типом
             const fileName = file.name.replace(/\.[^/.]+$/, '') + '.webp';
@@ -314,12 +307,12 @@ function convertToWebP(file) {
           }
         }, 'image/webp', 0.85); // Качество 85%
       };
-      img.onerror = function() {
+      img.onerror = function () {
         reject(new Error('Failed to load image'));
       };
       img.src = e.target.result;
     };
-    reader.onerror = function() {
+    reader.onerror = function () {
       reject(new Error('Failed to read file'));
     };
     reader.readAsDataURL(file);
