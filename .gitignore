@@ -6,10 +6,4 @@ ripx
 app.exe
 app/ripx.exe
 ripx.exe
-memory-bank/architecture.md
-memory-bank/brief.md
-memory-bank/context.md
-memory-bank/product.md
-memory-bank/progress.md
-memory-bank/README.md
-memory-bank/tech.md
+memory-bank/
