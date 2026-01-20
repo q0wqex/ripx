@@ -536,3 +536,32 @@ input[type="file"] {
 .footer a:hover {
   text-decoration: underline;
 }
+
+.telegram-link {
+  color: #4FC3F7;
+  text-decoration: none;
+  border-bottom: 1px dotted #4FC3F7;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.telegram-link::before {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: #29B6F6;
+  transition: width 0.3s ease;
+}
+
+.telegram-link:hover {
+  color: #E3F2FD;
+  border-bottom-style: solid;
+  transform: translateY(-1px);
+}
+
+.telegram-link:hover::before {
+  width: 100%;
+}
