@@ -122,10 +122,10 @@ func IsImageFile(filename string) bool {
 
 // RandomID генерирует случайный ID
 func RandomID() string {
-	bytes := make([]byte, 2)
+	bytes := make([]byte, 3)
 	if _, err := rand.Read(bytes); err != nil {
 		// Fallback на timestamp
-		return fmt.Sprintf("%04x", time.Now().UnixNano()%65536)
+		return fmt.Sprintf("%05x", time.Now().UnixNano()%1048576)
 	}
-	return hex.EncodeToString(bytes)
+	return hex.EncodeToString(bytes)[:5]
 }
