@@ -165,6 +165,28 @@ function showCopiedFeedback(button) {
   }, 2000);
 }
 
+// Функция для копирования ссылки на альбом
+function copyAlbumUrl(sessionID, albumID, button) {
+  const url = window.location.origin + '/' + sessionID + '/' + albumID;
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(url)
+      .then(function () { showCopiedFeedback(button) })
+      .catch(function (err) { console.error('нᴇ удᴀᴧоᴄь ᴄᴋоᴨиᴩоʙᴀᴛь ᴜʀʟ: ', err) });
+  } else {
+    // Fallback для старых браузеров
+    const textArea = document.createElement('textarea');
+    textArea.value = url;
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    try {
+      document.execCommand('copy');
+      showCopiedFeedback(button);
+    } catch (err) { console.error('Не удалось скопировать URL: ', err) }
+    document.body.removeChild(textArea);
+  }
+}
+
 function copyUrl(sessionID, albumID, filename, button) {
   const url = window.location.origin + '/' + sessionID + '/' + albumID + '/' + filename;
   if (navigator.clipboard) {
