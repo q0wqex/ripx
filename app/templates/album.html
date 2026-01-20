@@ -15,9 +15,11 @@
 
   <div class="glass-card">
     <div class="header">
-      <h1>ᴀᴧьбоʍ: {{.AlbumID}}</h1>
       <div>
         <a href="/" class="upload-more">нᴀ ᴦᴧᴀʙную</a>
+      </div>
+      <h1>ᴀᴧьбоʍ: {{.AlbumID}}</h1>
+      <div>
         <button class="copy-btn" onclick="copyAlbumUrl('{{.OwnerSessionID}}','{{.AlbumID}}',this)">ᴄᴋоᴨиᴩоʙᴀᴛь ᴀᴧьбоʍ</button>
         {{if .IsOwner}}
         <form action="/delete-album" method="POST" class="inline-form"
