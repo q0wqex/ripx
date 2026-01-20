@@ -20,13 +20,13 @@
       </div>
       <h1>{{.AlbumID}}</h1>
       <div>
-        <button class="copy-btn" onclick="copyAlbumUrl('{{.OwnerSessionID}}','{{.AlbumID}}',this)">ᴄᴋоᴨиᴩоʙᴀᴛь
-          ᴀᴧьбоʍ</button>
+        <button class="copy-btn" onclick="copyAlbumUrl('{{.OwnerSessionID}}','{{.AlbumID}}',this)">ᴋоᴨиᴩоʙᴀᴛь
+          ᴜʀʟ</button>
         {{if .IsOwner}}
         <form action="/delete-album" method="POST" class="inline-form"
           onsubmit="return confirm('Вы уверены, что хотите удалить весь альбом со всеми изображениями?')">
           <input type="hidden" name="album_id" value="{{.AlbumID}}">
-          <button type="submit" class="delete-album-btn">удᴀᴧиᴛь ᴀᴧьбоʍ</button>
+          <button type="submit" class="delete-album-btn">удᴀᴧиᴛь</button>
         </form>
         {{end}}
       </div>
@@ -86,7 +86,7 @@
   <!-- Оверлей для просмотра изображений -->
   <footer class="footer">
     <p>ʙᴄᴇᴦо изобᴩᴀжᴇний нᴀ ᴄᴇᴩʙиᴄᴇ: {{.TotalImageCount}}</p>
-    <p>ᴄʀᴇᴀᴛᴇᴅ ᴡɪᴛʜ ❤️ ʙʏ ǫ0ᴡǫᴇx</p>
+    <p>ᴄʀᴇᴀᴛᴇᴅ ᴡɪᴛʜ ❤️ ʙʏ <a href="https://t.me/q0wqex" class="telegram-link">ǫ0ᴡǫᴇx</a></p>
   </footer>
   <div id="image-viewer-overlay" class="image-viewer-overlay" onclick="closeZoom()">
     <div id="zoomed-image-element"></div>
