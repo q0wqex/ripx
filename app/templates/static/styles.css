@@ -19,7 +19,7 @@ body {
         linear-gradient(to bottom, rgba(128, 128, 128, 0.05) 1px, transparent 1px);
     background-size: 60px;
     background-attachment: fixed;
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Montserrat', 'Montserrat-fallback', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
     color: #c9d1d9; /* Светло-серый текст */
     margin: 0;
     padding: 0;
@@ -34,7 +34,7 @@ body {
 }
 
 h1 {
-    font-family: 'Unbounded', sans-serif;
+    font-family: 'Unbounded', 'Montserrat', sans-serif;
     color: #ffffff;
     text-align: center;
 }
@@ -74,6 +74,7 @@ h1 {
     padding: 24px;
     transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
     max-width: 800px;
+    width: 100%; /* Фиксированная ширина для предотвращения CLS */
     margin: auto;
     position: relative;
     z-index: 1;
@@ -282,7 +283,8 @@ input[type="file"] {
 .image-grid {
   display: flex;
   flex-direction: column;
-  gap: 20px
+  gap: 20px;
+  min-height: 300px; /* Минимальная высота для предотвращения CLS */
 }
 
 .image-item {
@@ -294,6 +296,7 @@ input[type="file"] {
     flex-direction: column;
     transition: background 0.3s ease, border-color 0.3s ease;
     contain: layout style paint; /* CSS containment для производительности */
+    min-height: 200px; /* Минимальная высота для предотвращения CLS */
 }
 
 .image-item:hover {
@@ -308,6 +311,9 @@ input[type="file"] {
   cursor: zoom-in;
   transition: transform 0.3s ease;
   content-visibility: auto; /* Оптимизация рендеринга */
+  aspect-ratio: 16 / 9; /* Резервируем место для изображения */
+  object-fit: contain; /* Сохраняем пропорции */
+  background: rgba(255, 255, 255, 0.02); /* Фон пока изображение загружается */
 }
 
 /* Стили для оверлея просмотра изображений */
@@ -345,7 +351,8 @@ input[type="file"] {
 }
 
 .image-info {
-  padding: 15px
+  padding: 15px;
+  min-height: 80px; /* Фиксированная минимальная высота для предотвращения CLS */
 }
 
 .image-name {
