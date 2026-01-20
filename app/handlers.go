@@ -83,7 +83,7 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Обрабатываем файлы
-	if err := processUpload(files, sessionID, albumID, w); err != nil {
+	if err := processUpload(files, sessionID, albumID); err != nil {
 		http.Error(w, fmt.Sprintf("Upload failed: %v", err), http.StatusInternalServerError)
 		return
 	}
@@ -107,7 +107,7 @@ func contentHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	parts := strings.SplitN(path, "/", 3)
-	
+
 	switch len(parts) {
 	case 2:
 		// Страница альбома
@@ -133,10 +133,10 @@ func handleAlbumPage(w http.ResponseWriter, r *http.Request, sessionID, albumID 
 	logger.Debug(fmt.Sprintf("handleAlbumPage: images_count=%d", len(images)))
 
 	data := struct {
-	Images          []ImageInfo
+		Images          []ImageInfo
 		HasImages       bool
 		SessionID       string
-	OwnerSessionID string
+		OwnerSessionID  string
 		AlbumID         string
 		IsOwner         bool
 		TotalImageCount int
@@ -292,7 +292,7 @@ func getUploadFiles(r *http.Request) []*multipart.FileHeader {
 }
 
 // processUpload обрабатывает загрузку файлов параллельно
-func processUpload(files []*multipart.FileHeader, sessionID, albumID string, w http.ResponseWriter) error {
+func processUpload(files []*multipart.FileHeader, sessionID, albumID string) error {
 	logger.Debug(fmt.Sprintf("processUpload: starting, files_count=%d, sessionID=%s, albumID=%s", len(files), sessionID, albumID))
 	var wg sync.WaitGroup
 	errs := make(chan error, len(files))

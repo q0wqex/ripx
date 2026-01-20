@@ -15,8 +15,9 @@ import (
 // Path builders for data directories
 func userPath(userID string) string           { return filepath.Join(DataPath, userID) }
 func albumPath(userID, albumID string) string { return filepath.Join(DataPath, userID, albumID) }
-func imagePath(userID, albumID, filename string) string { return filepath.Join(DataPath, userID, albumID, filename) }
-
+func imagePath(userID, albumID, filename string) string {
+	return filepath.Join(DataPath, userID, albumID, filename)
+}
 
 // Глобальная переменная для хранения общего количества изображений
 var TotalImageCount int
@@ -58,13 +59,13 @@ func saveImage(file multipart.File, header *multipart.FileHeader, userID, albumI
 	}
 
 	// Генерация уникального имени файла
-	filename := generateUniqueFilename(header.Filename, extension)
+	filename := generateUniqueFilename(extension)
 	filePath := albumPath + "/" + filename
 
 	// Создание файла
 	dst, err := os.Create(filePath)
 	if err != nil {
-	return nil, err
+		return nil, err
 	}
 	defer dst.Close()
 
@@ -85,7 +86,7 @@ func saveImage(file multipart.File, header *multipart.FileHeader, userID, albumI
 	return &ImageInfo{
 		Filename: filename,
 		Path:     filePath,
-	Size:     stat.Size(),
+		Size:     stat.Size(),
 		UserID:   userID,
 		AlbumID:  albumID,
 	}, nil
@@ -119,10 +120,10 @@ func validateImageType(file multipart.File) (string, bool) {
 }
 
 // generateUniqueFilename генерирует уникальное имя файла
-func generateUniqueFilename(originalFilename, extension string) string {
+func generateUniqueFilename(extension string) string {
 	ext := strings.ToLower(extension)
 	if ext == "" {
-		ext = ".jpg" // расширение по умолчанию
+		ext = "webp" // расширение по умолчанию
 	} else if !strings.HasPrefix(ext, ".") {
 		ext = "." + ext // добавляем точку если её нет
 	}
@@ -153,7 +154,7 @@ func getUserImages(userID, albumID string) ([]ImageInfo, error) {
 		}
 
 		filename := entry.Name()
-	if !IsImageFile(filename) {
+		if !IsImageFile(filename) {
 			continue
 		}
 
@@ -175,11 +176,11 @@ func getUserImages(userID, albumID string) ([]ImageInfo, error) {
 	sort.Slice(images, func(i, j int) bool {
 		infoI, errI := os.Stat(images[i].Path)
 		infoJ, errJ := os.Stat(images[j].Path)
-		
+
 		if errI != nil || errJ != nil {
 			return false // если не можем получить статус файла, не меняем порядок
 		}
-		
+
 		return infoI.ModTime().Before(infoJ.ModTime())
 	})
 
@@ -302,7 +303,7 @@ func deleteImage(userID, albumID, filename string) error {
 	filePath := imagePath(userID, albumID, filename)
 
 	if _, err := os.Stat(filePath); os.IsNotExist(err) {
-	return fmt.Errorf("image not found")
+		return fmt.Errorf("image not found")
 	}
 
 	err := os.Remove(filePath)
@@ -348,15 +349,15 @@ func deleteUser(userID string) error {
 			// Пропускаем ошибки доступа к файлам
 			return nil
 		}
-		
+
 		// Пропускаем директории
-	if !info.IsDir() {
+		if !info.IsDir() {
 			// Проверяем, является ли файл изображением
 			if IsImageFile(info.Name()) {
 				totalImages++
 			}
 		}
-		
+
 		return nil
 	})
 
@@ -371,25 +372,25 @@ func deleteUser(userID string) error {
 // countAllFilesInDataPath подсчитывает количество всех файлов в директории data при запуске приложения
 func countAllFilesInDataPath() int {
 	count := 0
-	
+
 	// Рекурсивный обход всей директории DataPath
 	err := filepath.Walk(DataPath, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			// Пропускаем ошибки доступа к файлам
 			return nil
 		}
-		
+
 		// Пропускаем директории
 		if !info.IsDir() {
 			count++
 		}
-		
+
 		return nil
 	})
-	
+
 	if err != nil {
 		logger.Error(fmt.Sprintf("countAllFilesInDataPath: error walking data directory: %v", err))
 	}
-	
+
 	return count
 }
