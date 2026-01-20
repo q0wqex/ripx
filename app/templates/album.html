@@ -5,6 +5,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ᴩиᴨиᴋᴄ ʀᴇʙᴏʀɴ</title>
+  <!-- Preconnect для Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- DNS prefetch для дополнительной оптимизации -->
+  <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+  <link rel="dns-prefetch" href="https://fonts.gstatic.com">
   <link rel="stylesheet" href="/static/styles.css">
 </head>
 
@@ -60,7 +66,7 @@
       {{range .Images}}
       <div class="image-item">
         <img src="/{{$.OwnerSessionID}}/{{$.AlbumID}}/{{.Filename}}" alt="{{.Filename}}" class="zoomable-image"
-          onclick="toggleZoom(this)">
+          onclick="toggleZoom(this)" loading="lazy" decoding="async">
         <div class="image-info">
           <div class="image-name">{{.Filename}}</div>
           <div>
@@ -92,7 +98,7 @@
     <div id="zoomed-image-element"></div>
   </div>
 
-  <script src="/static/common.js"></script>
+  <script src="/static/common.js" defer></script>
 </body>
 
 </html>

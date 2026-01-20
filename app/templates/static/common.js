@@ -4,16 +4,23 @@ document.addEventListener('DOMContentLoaded', function () {
   const uploadForm = document.getElementById('uploadForm') || document.getElementById('imageUploadForm');
 
   if (uploadArea && fileInput && uploadForm) {
-    uploadArea.addEventListener('click', function () { fileInput.click() });
+    uploadArea.addEventListener('click', function () { fileInput.click() }, { passive: true });
     fileInput.addEventListener('change', function () {
       if (fileInput.files.length > 0) {
         handleUpload(fileInput.files, uploadForm);
       }
     });
-    uploadArea.addEventListener('dragover', function (e) { e.preventDefault(); uploadArea.classList.add('dragover') });
-    uploadArea.addEventListener('dragleave', function (e) { e.preventDefault(); uploadArea.classList.remove('dragover') });
+    uploadArea.addEventListener('dragover', function (e) { 
+      e.preventDefault(); 
+      uploadArea.classList.add('dragover');
+    });
+    uploadArea.addEventListener('dragleave', function (e) { 
+      e.preventDefault(); 
+      uploadArea.classList.remove('dragover');
+    });
     uploadArea.addEventListener('drop', function (e) {
-      e.preventDefault(); uploadArea.classList.remove('dragover');
+      e.preventDefault(); 
+      uploadArea.classList.remove('dragover');
       const files = e.dataTransfer.files;
       if (files.length > 0) {
         fileInput.files = files;
@@ -225,14 +232,14 @@ function deleteImage(sessionID, albumID, filename, button) {
       if (response.ok) {
         // Удаляем элемент изображения из DOM
         const imageItem = button.closest('.image-item');
-        imageItem.style.opacity = '0.5';
+        imageItem.style.transition = 'opacity 0.3s ease';
+        imageItem.style.opacity = '0';
         setTimeout(() => {
           imageItem.remove();
           // Проверяем, остались ли изображения
-          const remainingImages = document.querySelectorAll('.image-item');
-          if (remainingImages.length === 0) {
+          const imageGrid = document.getElementById('imageGrid');
+          if (!imageGrid.querySelector('.image-item')) {
             // Показываем пустое состояние
-            const imageGrid = document.getElementById('imageGrid');
             imageGrid.innerHTML = EMPTY_STATE_HTML;
           }
         }, 300);
@@ -273,17 +280,16 @@ function toggleZoom(img) {
   const overlay = document.getElementById('image-viewer-overlay');
   const zoomedImageContainer = document.getElementById('zoomed-image-element');
 
-  // Очищаем контейнер перед вставкой нового изображения
-  while (zoomedImageContainer.firstChild) {
-    zoomedImageContainer.removeChild(zoomedImageContainer.firstChild);
-  }
+  // Быстрая очистка контейнера
+  zoomedImageContainer.textContent = '';
 
-  // Клонируем узел, чтобы не перемещать оригинал
-  const clonedImage = img.cloneNode(true);
-  clonedImage.removeAttribute('onclick'); // Убираем обработчик, чтобы избежать рекурсии
-  clonedImage.className = ''; // Сбрасываем классы, чтобы стили превью не мешали
+  // Создаем новое изображение вместо клонирования
+  const newImg = document.createElement('img');
+  newImg.src = img.src;
+  newImg.alt = img.alt;
+  newImg.loading = 'eager'; // Приоритетная загрузка для зума
 
-  zoomedImageContainer.appendChild(clonedImage);
+  zoomedImageContainer.appendChild(newImg);
   overlay.classList.add('active');
 }
 

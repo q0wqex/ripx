@@ -1,5 +1,15 @@
-/* Подключение шрифтов Montserrat и Unbounded из Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&family=Unbounded:wght@600&display=swap');
+/* Подключение шрифтов Montserrat и Unbounded из Google Fonts с оптимизацией */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&family=Unbounded:wght@600&display=swap&text=%D0%B0%D0%B1%D0%B2%D0%B3%D0%B4%D0%B5%D1%91%D0%B6%D0%B7%D0%B8%D0%B9%D0%BA%D0%BB%D0%BC%D0%BD%D0%BE%D0%BF%D1%80%D1%81%D1%82%D1%83%D1%84%D1%85%D1%86%D1%87%D1%88%D1%89%D1%8A%D1%8B%D1%8C%D1%8D%D1%8E%D1%8F%D0%90%D0%91%D0%92%D0%93%D0%94%D0%95%D0%81%D0%96%D0%97%D0%98%D0%99%D0%9A%D0%9B%D0%9C%D0%9D%D0%9E%D0%9F%D0%A0%D0%A1%D0%A2%D0%A3%D0%A4%D0%A5%D0%A6%D0%A7%D0%A8%D0%A9%D0%AA%D0%AB%D0%AC%D0%AD%D0%AE%D0%AF0123456789');
+/* Fallback для системных шрифтов */
+@font-face {
+  font-family: 'Montserrat-fallback';
+  src: local('Arial'), local('Helvetica');
+  font-display: swap;
+  ascent-override: 105%;
+  descent-override: 35%;
+  line-gap-override: 0%;
+  size-adjust: 95%;
+}
 
 body {
     background-color: #161b23;
@@ -35,6 +45,8 @@ h1 {
     filter: blur(60px); /* Ключевое свойство для размытия */
     opacity: 0.15;
     z-index: -1; /* Чтобы были под контентом */
+    will-change: transform; /* GPU ускорение */
+    transform: translateZ(0); /* Форсируем GPU слой */
 }
 
 .blob-1 {
@@ -57,19 +69,22 @@ h1 {
     background: rgba(255, 255, 255, 0.02);
     border: 1px solid rgba(255, 255, 255, 0.08);
     backdrop-filter: blur(10px); /* Самое важное свойство */
-    border-radius: 16px; /* В проекте используется 'lg', что примерно равно 16px */
+    -webkit-backdrop-filter: blur(10px); /* Safari поддержка */
+    border-radius: 16px;
     padding: 24px;
-    transition: all 0.3s ease;
-    max-width: 800px; /* Ограничим ширину для читаемости */
-    margin: auto; /* Центрируем элемент по вертикали и горизонтали внутри flex-контейнера */
+    transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+    max-width: 800px;
+    margin: auto;
     position: relative;
     z-index: 1;
-    flex: 0 1 auto; /* Позволяем элементу расти/сжиматься при необходимости */
+    flex: 0 1 auto;
+    will-change: background, border-color;
+    transform: translateZ(0); /* GPU ускорение */
 }
 
 .glass-card:hover {
     background: rgba(255, 255, 255, 0.04);
-    border-color: rgba(34, 211, 238, 0.3); /* Акцентный цвет при наведении */
+    border-color: rgba(34, 211, 238, 0.3);
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
 }
 
@@ -96,17 +111,15 @@ h1 {
     margin-bottom: 30px;
     background: rgba(255, 255, 255, 0.02);
     border: 1px solid rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(10px);
     border-radius: 16px;
     padding: 24px;
-    transition: all 0.3s ease;
+    transition: background 0.3s ease, border-color 0.3s ease;
     position: relative;
 }
 
 .header:hover {
     background: rgba(255, 255, 255, 0.04);
     border-color: rgba(34, 211, 238, 0.3);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
 }
 
 .header h1 {
@@ -141,9 +154,8 @@ h1 {
     text-align: center;
     margin: 20px 0;
     background: rgba(255, 255, 255, 0.02);
-    backdrop-filter: blur(10px);
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: border-color 0.3s ease, background 0.3s ease;
 }
 
 .upload-area:hover {
@@ -202,15 +214,13 @@ input[type="file"] {
     border-radius: 16px;
     padding: 15px;
     background: rgba(255, 255, 255, 0.02);
-    backdrop-filter: blur(10px);
     text-align: center;
-    transition: all 0.3s ease;
+    transition: background 0.3s ease, border-color 0.3s ease;
 }
 
 .album-link:hover .album-item {
     background: rgba(255, 255, 255, 0.04);
     border-color: rgba(34, 211, 238, 0.3);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
 }
 
 .album-link {
@@ -280,24 +290,24 @@ input[type="file"] {
     border-radius: 16px;
     overflow: hidden;
     background: rgba(255, 255, 255, 0.02);
-    backdrop-filter: blur(10px);
     display: flex;
     flex-direction: column;
-    transition: all 0.3s ease;
+    transition: background 0.3s ease, border-color 0.3s ease;
+    contain: layout style paint; /* CSS containment для производительности */
 }
 
 .image-item:hover {
     background: rgba(255, 255, 255, 0.04);
     border-color: rgba(34, 211, 238, 0.3);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
 }
 
 .image-item img {
- width: 100%;
+  width: 100%;
   height: auto;
   display: block;
   cursor: zoom-in;
   transition: transform 0.3s ease;
+  content-visibility: auto; /* Оптимизация рендеринга */
 }
 
 /* Стили для оверлея просмотра изображений */
@@ -307,8 +317,7 @@ input[type="file"] {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.8);
-  backdrop-filter: blur(5px);
+  background: rgba(0, 0, 0, 0.9);
   display: none;
   justify-content: center;
   align-items: center;
@@ -416,15 +425,13 @@ input[type="file"] {
     padding: 60px 20px;
     background: rgba(255, 255, 255, 0.02);
     border: 1px solid rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(10px);
     border-radius: 16px;
-    transition: all 0.3s ease;
+    transition: background 0.3s ease, border-color 0.3s ease;
 }
 
 .empty-state:hover {
-    background: rgba(25, 255, 255, 0.04);
+    background: rgba(255, 255, 255, 0.04);
     border-color: rgba(34, 211, 238, 0.3);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
 }
 
 .empty-icon {
@@ -496,8 +503,7 @@ input[type="file"] {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.7);
-    backdrop-filter: blur(5px);
+    background: rgba(0, 0, 0, 0.85);
     z-index: 1000;
     justify-content: center;
     align-items: center
@@ -509,12 +515,10 @@ input[type="file"] {
 
 .upload-progress {
     background: rgba(255, 255, 255, 0.02);
-    border: 1px solid rgba(25, 255, 255, 0.08);
-    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 16px;
     padding: 40px;
     text-align: center;
-    transition: all 0.3s ease;
 }
 
 .upload-spinner {
@@ -529,6 +533,17 @@ input[type="file"] {
 
 @keyframes spin {
   to { transform: rotate(360deg) }
+}
+
+/* Оптимизация производительности */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 .upload-status {
