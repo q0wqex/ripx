@@ -123,15 +123,22 @@ h1 {
     border-color: rgba(34, 211, 238, 0.3);
 }
 
-.header h1 {
+.header .center {
+    flex: 1;
+    text-align: center;
+}
+
+.header .center h1 {
     margin: 0;
     text-align: center;
     font-family: 'Montserrat', sans-serif;
     color: #c9d1d9;
-    flex: 1;
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
+}
+
+.header .center p {
+    margin: 5px 0 0 0;
+    font-size: 14px;
+    color: #cccccc;
 }
 
 .header > div:first-child {
