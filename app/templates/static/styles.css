@@ -626,3 +626,97 @@ input[type="file"] {
 .telegram-link:hover::before {
   width: 100%;
 }
+
+/* Стили для рекламного баннера VPN */
+.promo-banner {
+    background: rgba(34, 211, 238, 0.03);
+    border: 1px solid rgba(34, 211, 238, 0.15);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: 16px;
+    padding: 16px 24px;
+    margin: 20px auto;
+    max-width: 800px;
+    width: calc(100% - 40px);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1;
+    position: relative;
+}
+
+.promo-banner:hover {
+    background: rgba(34, 211, 238, 0.06);
+    border-color: rgba(34, 211, 238, 0.4);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.promo-content {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.promo-icon {
+    font-size: 28px;
+    filter: drop-shadow(0 0 8px rgba(34, 211, 238, 0.3));
+    user-select: none;
+}
+
+.promo-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.promo-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #ffffff;
+    font-family: 'Unbounded', 'Montserrat', sans-serif;
+    letter-spacing: 0.5px;
+}
+
+.promo-subtitle {
+    font-size: 13px;
+    color: #8b949e;
+}
+
+.promo-btn {
+    background: rgba(34, 211, 238, 0.1);
+    border: 1px solid rgba(34, 211, 238, 0.3);
+    color: #22d3ee;
+    padding: 10px 20px;
+    border-radius: 12px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.promo-btn:hover {
+    background: #22d3ee;
+    color: #000000;
+    border-color: #22d3ee;
+    box-shadow: 0 0 20px rgba(34, 211, 238, 0.4);
+}
+
+@media (max-width: 600px) {
+    .promo-banner {
+        flex-direction: column;
+        text-align: center;
+        padding: 20px;
+        gap: 16px;
+    }
+    
+    .promo-content {
+        flex-direction: column;
+        gap: 10px;
+    }
+}
