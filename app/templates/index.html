@@ -23,7 +23,10 @@
     <h1>ᴩиᴨиᴋᴄ ʀᴇʙᴏʀɴ</h1>
     <div class="header-actions">
       <p>жиʙой, дᴀжᴇ ᴋоᴦдᴀ ᴧᴇжиᴛ</p>
-      <button type="button" class="delete-user-btn" onclick="deleteUser()">удᴀᴧиᴛь ᴨᴩоɸиᴧь</button>
+      <div>
+        <button type="button" class="convert-btn" onclick="convertMp4ToGif()">конʙᴇᴩтиᴩоʙᴀᴛь MP4</button>
+        <button type="button" class="delete-user-btn" onclick="deleteUser()">удᴀᴧиᴛь ᴨᴩоɸиᴧь</button>
+      </div>
     </div>
 
     <div class="upload-container">
@@ -69,6 +72,18 @@
     <p>ʙᴄᴇᴦо изобᴩᴀжᴇний нᴀ ᴄᴇᴩʙиᴄᴇ: {{.TotalImageCount}}</p>
     <p>ᴄʀᴇᴀᴛᴇᴅ ᴡɪᴛʜ ❤️ ʙʏ <a href="https://t.me/q0wqex" class="telegram-link">ǫ0ᴡǫᴇx</a></p>
   </footer>
+  
+  <!-- Модальное окно для конвертации MP4 в GIF -->
+  <div id="convert-modal" class="modal" style="display: none;">
+    <div class="modal-content">
+      <span class="close" onclick="closeConvertModal()">&times;</span>
+      <h2>Конвертировать MP4 в GIF</h2>
+      <input type="file" id="mp4-file" accept="video/mp4">
+      <button onclick="submitMp4Conversion()">Конвертировать</button>
+      <div id="convert-status"></div>
+    </div>
+  </div>
+  
   <script src="/static/common.js" defer></script>
 </body>
 

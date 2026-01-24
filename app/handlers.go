@@ -1,10 +1,12 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"mime/multipart"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strings"
 	"sync"
 )
@@ -333,4 +335,77 @@ func processUpload(files []*multipart.FileHeader, sessionID, albumID string) err
 // renderTemplate рендерит HTML шаблон из кеша
 func renderTemplate(w http.ResponseWriter, name string, data interface{}) error {
 	return templates.ExecuteTemplate(w, name, data)
+}
+
+// convertMp4Handler обрабатывает конвертацию MP4 видео в GIF
+func convertMp4Handler(w http.ResponseWriter, r *http.Request) {
+	logger.Debug(fmt.Sprintf("convertMp4Handler: request received, method=%s", r.Method))
+	
+	// Проверка метода запроса
+	if r.Method != http.MethodPost {
+		ErrorResponse(w, http.StatusMethodNotAllowed, "Method not allowed")
+		return
+	}
+
+	// Получение sessionID из cookie
+	sessionID := getSessionID(w, r)
+	logger.Debug(fmt.Sprintf("convertMp4Handler: sessionID=%s", sessionID))
+
+	// Ограничиваем размер запроса для видео
+	if err := r.ParseMultipartForm(MaxVideoSize); err != nil {
+		ErrorResponse(w, http.StatusBadRequest, "Error parsing form: "+err.Error())
+		return
+	}
+
+	// Получаем файл из формы
+	if r.MultipartForm == nil || r.MultipartForm.File == nil {
+		ErrorResponse(w, http.StatusBadRequest, "No file uploaded")
+		return
+	}
+
+	files := r.MultipartForm.File["video"]
+	if len(files) == 0 {
+		ErrorResponse(w, http.StatusBadRequest, "No video file found in request")
+		return
+	}
+
+	// Берем первый файл
+	fileHeader := files[0]
+	logger.Debug(fmt.Sprintf("convertMp4Handler: processing file=%s, size=%d", fileHeader.Filename, fileHeader.Size))
+
+	// Открываем файл
+	file, err := fileHeader.Open()
+	if err != nil {
+		ErrorResponse(w, http.StatusInternalServerError, "Error opening file: "+err.Error())
+		return
+	}
+	defer file.Close()
+
+	// Сохраняем и конвертируем видео
+	gifRelativePath, err := saveConvertedGif(file, fileHeader, sessionID)
+	if err != nil {
+		logger.Error(fmt.Sprintf("convertMp4Handler: conversion failed: %v", err))
+		ErrorResponse(w, http.StatusInternalServerError, "Conversion failed: "+err.Error())
+		return
+	}
+
+	// Формируем URL для доступа к GIF
+	gifURL := filepath.Join("/", gifRelativePath)
+
+	// Формируем ответ
+	response := struct {
+		Success bool   `json:"success"`
+		Message string `json:"message"`
+		GifURL  string `json:"gifUrl,omitempty"`
+	}{
+		Success: true,
+		Message: "Video converted successfully",
+		GifURL:  gifURL,
+	}
+
+	// Отправляем JSON ответ
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(response)
+	logger.Debug(fmt.Sprintf("convertMp4Handler: conversion successful, gifUrl=%s", gifURL))
 }

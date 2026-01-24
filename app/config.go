@@ -15,6 +15,7 @@ const (
 
 	DefaultFilePerm = 0755
 	MaxFileSize     = 10 * 1024 * 1024 // 10MB
+	MaxVideoSize    = 50 * 1024 * 1024 // 50MB
 )
 
 // MIME types and extensions

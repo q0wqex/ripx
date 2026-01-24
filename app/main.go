@@ -95,6 +95,7 @@ func setupRoutes() *http.ServeMux {
 	mux.HandleFunc("/delete-image", deleteImageHandler)
 	mux.HandleFunc("/delete-album", deleteAlbumHandler)
 	mux.HandleFunc("/delete-user", deleteUserHandler)
+	mux.HandleFunc("/convert-mp4", convertMp4Handler)
 
 	return mux
 }
