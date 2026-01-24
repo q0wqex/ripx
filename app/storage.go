@@ -436,7 +436,7 @@ func convertMp4ToGif(inputPath, outputPath string) error {
 	// -c:v gif: кодек для GIF
 	cmd := exec.Command("ffmpeg",
 		"-i", inputPath,
-		"-vf", "fps=10,scale=320:-1:flags=lanczos",
+		"-vf", "fps=30,scale=720:-1:flags=lanczos",
 		"-c:v", "gif",
 		outputPath,
 	)
