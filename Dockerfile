@@ -17,6 +17,9 @@ FROM alpine:latest
 
 WORKDIR /app
 
+# Устанавливаем FFmpeg для конвертации MP4 в GIF
+RUN apk add --no-cache ffmpeg
+
 # Создаем директорию для данных
 RUN mkdir -p /data
 
