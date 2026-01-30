@@ -1,7 +1,7 @@
 # Ripx
 
-[![Stars](https://img.shields.io/github/stars/project-absolute/ripx.svg?style=social)](https://github.com/project-absolute/ripx/stargazers)
-[![Docker Image](https://img.shields.io/badge/docker-ghcr.io-blue?logo=docker)](https://github.com/project-absolute/ripx/pkgs/container/ripx)
+[![Stars](https://img.shields.io/github/stars/q0wqex/ripx.svg?style=social)](https://github.com/q0wqex/ripx/stargazers)
+[![Docker Image](https://img.shields.io/badge/docker-ghcr.io-blue?logo=docker)](https://github.com/q0wqex/ripx/pkgs/container/ripx)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
 [🇷🇺 Русский](README.md) | [🇺🇸 English](README_EN.md)
@@ -54,7 +54,7 @@ Core parameters are defined in `app/config.go`:
 Start the service with a single command (creates data folder, downloads config, and starts container):
 
 ```bash
-mkdir -p ripx/data && cd ripx && curl -O https://raw.githubusercontent.com/project-absolute/ripx/main/docker-compose.yml && docker-compose up -d
+mkdir -p ripx/data && cd ripx && curl -O https://raw.githubusercontent.com/q0wqex/ripx/main/docker-compose.yml && docker-compose up -d
 ```
 
 ### 2. Manual Installation
@@ -63,7 +63,7 @@ If you want to build from source:
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/project-absolute/ripx.git && cd ripx
+   git clone https://github.com/q0wqex/ripx.git && cd ripx
    ```
 2. Build and run:
    ```bash
@@ -101,3 +101,7 @@ location / {
 - `/data` — Image storage (created automatically).
 - `docker-compose.yml` — Docker deployment file.
 - `changelog.md` — Project history.
+
+## Acknowledgments
+
+- **[Remnawave](https://remna.st/)** — for the great visual style and design that became the foundation for this project's look.

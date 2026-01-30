@@ -1,6 +1,6 @@
 services:
   ripx:
-    image: ghcr.io/project-absolute/ripx:main
+    image: ghcr.io/q0wqex/ripx:main
     hostname: ripx
     container_name: ripx
     ports:

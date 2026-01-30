@@ -1,7 +1,7 @@
 # Ripx
 
-[![Stars](https://img.shields.io/github/stars/project-absolute/ripx.svg?style=social)](https://github.com/project-absolute/ripx/stargazers)
-[![Docker Image](https://img.shields.io/badge/docker-ghcr.io-blue?logo=docker)](https://github.com/project-absolute/ripx/pkgs/container/ripx)
+[![Stars](https://img.shields.io/github/stars/q0wqex/ripx.svg?style=social)](https://github.com/q0wqex/ripx/stargazers)
+[![Docker Image](https://img.shields.io/badge/docker-ghcr.io-blue?logo=docker)](https://github.com/q0wqex/ripx/pkgs/container/ripx)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
 [🇷🇺 Русский](README.md) | [🇺🇸 English](README_EN.md)
@@ -54,7 +54,7 @@
 Запустите сервис одной командой (создаст папку, скачает конфиг и поднимет контейнер):
 
 ```bash
-mkdir -p ripx/data && cd ripx && curl -O https://raw.githubusercontent.com/project-absolute/ripx/main/docker-compose.yml && docker-compose up -d
+mkdir -p ripx/data && cd ripx && curl -O https://raw.githubusercontent.com/q0wqex/ripx/main/docker-compose.yml && docker-compose up -d
 ```
 
 ### 2. Ручная установка
@@ -63,7 +63,7 @@ mkdir -p ripx/data && cd ripx && curl -O https://raw.githubusercontent.com/proje
 
 1. Склонируйте репозиторий:
    ```bash
-   git clone https://github.com/project-absolute/ripx.git && cd ripx
+   git clone https://github.com/q0wqex/ripx.git && cd ripx
    ```
 2. Соберите и запустите:
    ```bash
@@ -101,3 +101,7 @@ location / {
 - `/data` — Хранилище изображений.
 - `docker-compose.yml` — Файл для Docker.
 - `changelog.md` — История изменений.
+
+## Благодарности
+
+- **[Remnawave](https://remna.st/)** — за отличный визуальный стиль и дизайн, ставший основой для оформления этого проекта.
