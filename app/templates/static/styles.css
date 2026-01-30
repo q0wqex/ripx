@@ -935,9 +935,29 @@ input[type="file"] {
 
 .changelog-body {
   padding: 30px;
+  padding-right: 36px;
   overflow-y: auto;
   color: #c9d1d9;
   line-height: 1.6;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(34, 211, 238, 0.4) transparent;
+}
+
+.changelog-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.changelog-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.changelog-body::-webkit-scrollbar-thumb {
+  background: rgba(34, 211, 238, 0.2);
+  border-radius: 10px;
+}
+
+.changelog-body::-webkit-scrollbar-thumb:hover {
+  background: rgba(34, 211, 238, 0.4);
 }
 
 .changelog-body h2,
