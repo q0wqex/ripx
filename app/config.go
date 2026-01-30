@@ -12,6 +12,8 @@ const (
 	DataPath      = "/data"
 	TemplatesPath = "templates"
 	StaticPath    = "templates/static"
+	ChangelogPath = "../changelog.md"
+	ChangelogURL  = "https://raw.githubusercontent.com/project-absolute/ripx/main/changelog.md"
 
 	DefaultFilePerm = 0755
 	MaxFileSize     = 10 * 1024 * 1024 // 10MB

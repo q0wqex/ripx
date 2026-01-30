@@ -2,11 +2,13 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"mime/multipart"
 	"net/http"
 	"os"
 	"strings"
 	"sync"
+	"time"
 )
 
 // indexHandler обрабатывает главную страницу
@@ -258,6 +260,70 @@ func createAlbumHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	fmt.Fprintf(w, `{"album_id": "%s", "session_id": "%s"}`, albumID, sessionID)
+}
+
+// changelogCache хранит содержимое ченджлога в памяти
+var (
+	changelogCache      string
+	changelogCacheMutex sync.RWMutex
+	lastFetchTime       time.Time
+)
+
+// changelogHandler возвращает содержимое ченджлога
+func changelogHandler(w http.ResponseWriter, r *http.Request) {
+	changelogCacheMutex.RLock()
+	// Кэшируем на 1 час
+	if changelogCache != "" && time.Since(lastFetchTime) < time.Hour {
+		content := changelogCache
+		changelogCacheMutex.RUnlock()
+		SuccessResponse(w, map[string]string{"content": content})
+		return
+	}
+	changelogCacheMutex.RUnlock()
+
+	var content string
+	// Пробуем прочитать локально (в разных возможных путях)
+	paths := []string{ChangelogPath, "./changelog.md", "changelog.md"}
+	for _, p := range paths {
+		bytes, err := os.ReadFile(p)
+		if err == nil {
+			content = string(bytes)
+			break
+		}
+	}
+
+	if content == "" {
+		// Если локально нет, тянем с GitHub
+		logger.Info("Local changelog not found, fetching from GitHub...")
+		client := &http.Client{Timeout: 5 * time.Second}
+		resp, err := client.Get(ChangelogURL)
+		if err != nil {
+			http.Error(w, "Changelog not found", http.StatusNotFound)
+			return
+		}
+		defer resp.Body.Close()
+
+		if resp.StatusCode != http.StatusOK {
+			http.Error(w, "Changelog not found on GitHub", http.StatusNotFound)
+			return
+		}
+
+		bodyBytes, err := io.ReadAll(resp.Body)
+		if err != nil {
+			http.Error(w, "Error reading changelog", http.StatusInternalServerError)
+			return
+		}
+		content = string(bodyBytes)
+	}
+
+	// Обновляем кэш
+	changelogCacheMutex.Lock()
+	changelogCache = content
+	lastFetchTime = time.Now()
+	changelogCacheMutex.Unlock()
+
+	w.Header().Set("Content-Type", "application/json")
+	SuccessResponse(w, map[string]string{"content": content})
 }
 
 // Вспомогательные функции

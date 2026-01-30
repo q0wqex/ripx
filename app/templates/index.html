@@ -18,17 +18,25 @@
   <!-- Blob эффекты фона -->
   <div class="blob blob-1"></div>
   <div class="blob blob-2"></div>
+
   <!-- Рекламный баннер VPN -->
   <div class="promo-banner">
     <div class="promo-content">
-      <div class="promo-icon">🛡️</div>
+      <div class="promo-icon">
+        <img src="https://raw.githubusercontent.com/q0wqexray/q0wqexray.github.io/main/shared/logo.png"
+          alt="qRayVPN Logo" class="promo-logo-img">
+      </div>
       <div class="promo-info">
-        <div class="promo-title">q0wqexray VPN</div>
-        <div class="promo-subtitle">Быстрый, стабильный и безопасный доступ</div>
+        <div class="promo-title"><span class="q-red">q</span><span class="ray-white">Ray</span><span
+            class="vpn-red">VPN</span></div>
+        <div class="promo-subtitle">
+          быᴄᴛᴩый, ᴄᴛᴀбиᴧьный и бᴇзоᴨᴀᴄный доᴄᴛуᴨ
+          <span class="free-badge">ᴇᴄᴛь бᴇᴄᴨᴧᴀᴛный ᴛᴀᴩиɸ</span>
+        </div>
       </div>
     </div>
-    <a href="https://t.me/q0wqexrayBot" class="promo-btn" target="_blank">
-      <span>Открыть бота</span>
+    <a href="https://t.me/q0wqexrayBot?start=ad_0ZZEM7LL" class="promo-btn" target="_blank">
+      <span>ᴨодᴋᴧючиᴛьᴄя</span>
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
         stroke-linecap="round" stroke-linejoin="round">
         <line x1="7" y1="17" x2="17" y2="7"></line>
@@ -36,11 +44,15 @@
       </svg>
     </a>
   </div>
+
   <div class="glass-card">
     <h1>ᴩиᴨиᴋᴄ ʀᴇʙᴏʀɴ</h1>
     <div class="header-actions">
       <p>жиʙой, дᴀжᴇ ᴋоᴦдᴀ ᴧᴇжиᴛ</p>
-      <button type="button" class="delete-user-btn" onclick="deleteUser()">удᴀᴧиᴛь ᴨᴩоɸиᴧь</button>
+      <div>
+
+        <button type="button" class="delete-btn" onclick="deleteUser()">удᴀᴧиᴛь ᴨᴩоɸиᴧь</button>
+      </div>
     </div>
 
     <div class="upload-container">
@@ -57,7 +69,17 @@
     <!-- Индикатор загрузки -->
     <div class="upload-overlay" id="uploadOverlay">
       <div class="upload-progress">
-        <div class="upload-spinner"></div>
+        <div class="cat-loader">
+          <div class="cat-ear left"></div>
+          <div class="cat-ear right"></div>
+          <div class="cat-head">
+            <div class="cat-eyes">
+              <div class="cat-eye"></div>
+              <div class="cat-eye"></div>
+            </div>
+            <div class="cat-mouth"></div>
+          </div>
+        </div>
         <div class="upload-status" id="uploadStatus">зᴀᴦᴩузᴋᴀ...</div>
         <div class="upload-count" id="uploadCount"></div>
       </div>
@@ -83,13 +105,29 @@
 
   </div> <!-- Закрывающий тег для glass-card -->
 
-
+  <!-- Модальное окно обновлений -->
+  <div id="changelogModal" class="changelog-modal">
+    <div class="changelog-content">
+      <div class="changelog-header">
+        <h2>что ноʙоᴦо?</h2>
+      </div>
+      <div class="changelog-body" id="changelogBody">
+        <!-- Содержимое загрузится через JS -->
+      </div>
+      <div class="changelog-footer">
+        <button class="close-changelog-btn" onclick="closeChangelog()">ᴋᴩуᴛо!</button>
+      </div>
+    </div>
+  </div>
 
   <footer class="footer">
-
     <p>ʙᴄᴇᴦо изобᴩᴀжᴇний нᴀ ᴄᴇᴩʙиᴄᴇ: {{.TotalImageCount}}</p>
     <p>ᴄʀᴇᴀᴛᴇᴅ ᴡɪᴛʜ ❤️ ʙʏ <a href="https://t.me/q0wqex" class="telegram-link">ǫ0ᴡǫᴇx</a></p>
+    <p>ᴅᴇsɪɢɴ ɪɴsᴘɪʀᴇᴅ ʙʏ <a href="https://remna.st/" class="telegram-link">ʀᴇᴍɴᴀᴡᴀᴠᴇ</a></p>
   </footer>
+
+
+
   <script src="/static/common.js" defer></script>
 </body>
 

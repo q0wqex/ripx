@@ -10,16 +10,16 @@ document.addEventListener('DOMContentLoaded', function () {
         handleUpload(fileInput.files, uploadForm);
       }
     });
-    uploadArea.addEventListener('dragover', function (e) { 
-      e.preventDefault(); 
+    uploadArea.addEventListener('dragover', function (e) {
+      e.preventDefault();
       uploadArea.classList.add('dragover');
     });
-    uploadArea.addEventListener('dragleave', function (e) { 
-      e.preventDefault(); 
+    uploadArea.addEventListener('dragleave', function (e) {
+      e.preventDefault();
       uploadArea.classList.remove('dragover');
     });
     uploadArea.addEventListener('drop', function (e) {
-      e.preventDefault(); 
+      e.preventDefault();
       uploadArea.classList.remove('dragover');
       const files = e.dataTransfer.files;
       if (files.length > 0) {
@@ -346,3 +346,72 @@ function convertToWebP(file) {
     reader.readAsDataURL(file);
   });
 }
+
+// Работа с ченджлогом
+function checkChangelog() {
+  fetch('/changelog')
+    .then(response => response.json())
+    .then(data => {
+      if (!data.data || !data.data.content) return;
+
+      const content = data.data.content;
+      // Находим последнюю версию (первый заголовок ##)
+      const versionMatch = content.match(/## \[?([\d.]+)\]?/);
+      if (!versionMatch) return;
+
+      const latestVersion = versionMatch[1];
+      const savedVersion = localStorage.getItem('last_seen_version');
+
+      if (latestVersion !== savedVersion) {
+        showChangelog(content, latestVersion);
+      }
+    })
+    .catch(error => console.error('Error fetching changelog:', error));
+}
+
+function showChangelog(content, version) {
+  const modal = document.getElementById('changelogModal');
+  const body = document.getElementById('changelogBody');
+
+  if (!modal || !body) return;
+
+  // Берем только последнюю секцию до следующего ## или конца файла
+  const parts = content.split(/## \[?[\d.]+\]?/);
+  // parts[0] - заголовок # Changelog и все что до первой версии
+  // parts[1] - контент последней версии
+  let latestContent = parts[1] || "";
+
+  // Простой парсинг Markdown (заголовки и списки)
+  let html = latestContent
+    .trim()
+    .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+    .replace(/^\- (.*$)/gim, '<li>$1</li>');
+
+  // Группируем li в ul
+  html = html.replace(/(<li>.*<\/li>(\n<li>.*<\/li>)*)/g, '<ul>$1</ul>');
+
+  body.innerHTML = html;
+  modal.dataset.version = version;
+  modal.classList.add('active');
+  document.body.style.overflow = 'hidden'; // Запрещаем прокрутку фона
+}
+
+function closeChangelog() {
+  const modal = document.getElementById('changelogModal');
+  const version = modal.dataset.version;
+
+  if (version) {
+    localStorage.setItem('last_seen_version', version);
+  }
+
+  modal.classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+// Инициализация при загрузке
+document.addEventListener('DOMContentLoaded', function () {
+  // Вызываем проверку ченджлога через небольшую задержку для плавности
+  setTimeout(checkChangelog, 1000);
+});
+
+

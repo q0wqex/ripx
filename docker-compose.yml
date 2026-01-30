@@ -1,17 +1,11 @@
 services:
   ripx:
-    image: ghcr.io/project-absolute/ripx:dev
+    image: ghcr.io/q0wqex/ripx:main
     hostname: ripx
     container_name: ripx
     ports:
-      - "8000:8000"
+      - "127.0.0.1:8000:8000"
     volumes:
       - ./data:/data
       - /usr/share/zoneinfo/Europe/Moscow:/etc/localtime:ro
-    networks:
-      - edge-network
     restart: unless-stopped
-
-networks:
-  edge-network:
-    external: true
