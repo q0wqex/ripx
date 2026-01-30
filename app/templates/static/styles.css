@@ -395,7 +395,15 @@ input[type="file"] {
 .image-info {
   padding: 15px;
   min-height: 80px;
-  /* Фиксированная минимальная высота для предотвращения CLS */
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.image-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
 .image-name {
@@ -408,26 +416,29 @@ input[type="file"] {
 }
 
 .copy-btn {
-  background: rgba(33, 150, 243, 0.2);
-  border: 1px solid rgba(33, 150, 243, 0.4);
+  background: rgba(33, 150, 243, 0.1);
+  border: 1px solid rgba(33, 150, 243, 0.3);
   color: #2196F3;
-  padding: 5px 10px;
+  padding: 8px 16px;
   border-radius: 12px;
   cursor: pointer;
   font-family: 'Montserrat', sans-serif;
   transition: all 0.2s ease;
-  font-size: 12px;
+  font-size: 13px;
+  display: inline-block;
+  text-decoration: none;
 }
 
 .copy-btn:hover {
-  background: rgba(33, 150, 243, 0.3);
-  border-color: rgba(33, 150, 243, 0.6);
+  background: #2196F3;
   color: #ffffff;
+  border-color: #2196F3;
+  box-shadow: 0 0 15px rgba(33, 150, 243, 0.3);
 }
 
 .copy-btn.copied {
-  background: rgba(76, 175, 80, 0.3);
-  border-color: rgba(76, 175, 80, 0.6);
+  background: #4CAF50;
+  border-color: #4CAF50;
   color: #ffffff;
 }
 
@@ -450,13 +461,6 @@ input[type="file"] {
   border-color: #ff4d4d;
   color: #ffffff;
   box-shadow: 0 0 15px rgba(255, 77, 77, 0.3);
-}
-
-/* Компактный вариант для грида изображений */
-.image-info .delete-btn {
-  padding: 5px 10px;
-  font-size: 12px;
-  margin-left: 5px;
 }
 
 .empty-state {
