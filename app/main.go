@@ -13,7 +13,6 @@ import (
 // Template cache for improved performance
 var templates *template.Template
 
-
 func main() {
 	// Инициализация приложения
 	if err := initializeApp(); err != nil {
@@ -95,7 +94,6 @@ func setupRoutes() *http.ServeMux {
 	mux.HandleFunc("/delete-image", deleteImageHandler)
 	mux.HandleFunc("/delete-album", deleteAlbumHandler)
 	mux.HandleFunc("/delete-user", deleteUserHandler)
-	mux.HandleFunc("/convert-mp4", convertMp4Handler)
 
 	return mux
 }
