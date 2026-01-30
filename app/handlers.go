@@ -260,6 +260,23 @@ func createAlbumHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, `{"album_id": "%s", "session_id": "%s"}`, albumID, sessionID)
 }
 
+// changelogHandler возвращает содержимое ченджлога
+func changelogHandler(w http.ResponseWriter, r *http.Request) {
+	bytes, err := os.ReadFile(ChangelogPath)
+	if err != nil {
+		http.Error(w, "Changelog not found", http.StatusNotFound)
+		return
+	}
+
+	content := string(bytes)
+	// Для простоты возвращаем весь контент, фронтенд сам распарсит или мы можем распарсить здесь
+	// Но лучше вернуть только последнюю версию для модалки
+
+	w.Header().Set("Content-Type", "application/json")
+	// Можно отправить как текст или JSON
+	SuccessResponse(w, map[string]string{"content": content})
+}
+
 // Вспомогательные функции
 
 // getAlbumID получает или создает ID альбома

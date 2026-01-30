@@ -871,3 +871,132 @@ input[type="file"] {
     padding: 16px;
   }
 }
+
+/* Стили для модального окна ченджлога */
+.changelog-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 3000;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.changelog-modal.active {
+  display: flex;
+}
+
+.changelog-content {
+  background: rgba(22, 27, 35, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  width: 100%;
+  max-width: 600px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
+  animation: modal-appear 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modal-appear {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.changelog-header {
+  padding: 24px 30px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.changelog-header h2 {
+  margin: 0;
+  font-family: 'Unbounded', sans-serif;
+  font-size: 1.4rem;
+  color: #ffffff;
+}
+
+.changelog-body {
+  padding: 30px;
+  overflow-y: auto;
+  color: #c9d1d9;
+  line-height: 1.6;
+}
+
+.changelog-body h2,
+.changelog-body h3 {
+  color: #ffffff;
+  margin-top: 24px;
+  margin-bottom: 12px;
+  font-family: 'Unbounded', sans-serif;
+  font-size: 1.1rem;
+}
+
+.changelog-body h2:first-child,
+.changelog-body h3:first-child {
+  margin-top: 0;
+}
+
+.changelog-body ul {
+  padding-left: 20px;
+  margin-bottom: 20px;
+}
+
+.changelog-body li {
+  margin-bottom: 8px;
+}
+
+.changelog-footer {
+  padding: 20px 30px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  justify-content: flex-end;
+}
+
+.close-changelog-btn {
+  background: #22d3ee;
+  color: #000;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.close-changelog-btn:hover {
+  background: #06b6d4;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(34, 211, 238, 0.3);
+}
+
+@media (max-width: 480px) {
+  .changelog-content {
+    max-height: 90vh;
+  }
+
+  .changelog-header,
+  .changelog-body,
+  .changelog-footer {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+}

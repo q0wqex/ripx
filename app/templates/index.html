@@ -104,6 +104,22 @@
     {{end}}
 
   </div> <!-- Закрывающий тег для glass-card -->
+
+  <!-- Модальное окно обновлений -->
+  <div id="changelogModal" class="changelog-modal">
+    <div class="changelog-content">
+      <div class="changelog-header">
+        <h2>что ноʙоᴦо?</h2>
+      </div>
+      <div class="changelog-body" id="changelogBody">
+        <!-- Содержимое загрузится через JS -->
+      </div>
+      <div class="changelog-footer">
+        <button class="close-changelog-btn" onclick="closeChangelog()">ᴋᴩуᴛо!</button>
+      </div>
+    </div>
+  </div>
+
   <footer class="footer">
     <p>ʙᴄᴇᴦо изобᴩᴀжᴇний нᴀ ᴄᴇᴩʙиᴄᴇ: {{.TotalImageCount}}</p>
     <p>ᴄʀᴇᴀᴛᴇᴅ ᴡɪᴛʜ ❤️ ʙʏ <a href="https://t.me/q0wqex" class="telegram-link">ǫ0ᴡǫᴇx</a></p>
