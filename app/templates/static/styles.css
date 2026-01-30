@@ -571,127 +571,96 @@ input[type="file"] {
   width: 80px;
   height: 60px;
   position: relative;
-  margin: 0 auto 30px;
+  margin: 0 auto 40px;
 }
 
 .cat-head {
   width: 100%;
   height: 100%;
-  background: rgba(34, 211, 238, 0.1);
-  border: 2px solid rgba(34, 211, 238, 0.4);
+  background: rgba(34, 211, 238, 0.2);
+  border: 2px solid #22d3ee;
   border-radius: 50% 50% 45% 45%;
   position: relative;
-  animation: cat-breathe 2s ease-in-out infinite;
+  animation: cat-jump 0.6s ease-in-out infinite alternate;
 }
 
 .cat-ear {
   width: 25px;
   height: 25px;
-  background: rgba(34, 211, 238, 0.1);
-  border: 2px solid rgba(34, 211, 238, 0.4);
+  background: rgba(34, 211, 238, 0.2);
+  border: 2px solid #22d3ee;
   position: absolute;
-  top: -10px;
+  top: -12px;
   border-radius: 5px;
   z-index: -1;
 }
 
 .cat-ear.left {
   left: 5px;
-  transform: rotate(-20deg);
-  animation: ear-twitch-l 3s ease-in-out infinite;
+  transform: rotate(-25deg);
 }
 
 .cat-ear.right {
   right: 5px;
-  transform: rotate(20deg);
-  animation: ear-twitch-r 3.2s ease-in-out infinite;
+  transform: rotate(25deg);
 }
 
 .cat-eyes {
   display: flex;
   justify-content: space-around;
   width: 40px;
-  margin: 20px auto 0;
+  margin: 22px auto 0;
 }
 
 .cat-eye {
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
   background: #22d3ee;
   border-radius: 50%;
-  animation: cat-blink 4s infinite;
+  animation: cat-eye-roll 1.5s infinite linear;
 }
 
 .cat-mouth {
-  width: 12px;
-  height: 6px;
-  border-bottom: 2px solid rgba(34, 211, 238, 0.6);
-  border-radius: 0 0 10px 10px;
-  margin: 5px auto;
+  width: 14px;
+  height: 7px;
+  border-bottom: 2px solid #22d3ee;
+  border-radius: 0 0 12px 12px;
+  margin: 6px auto;
 }
 
-@keyframes cat-breathe {
+@keyframes cat-jump {
+  from {
+    transform: translateY(0) scaleX(1.05);
+  }
 
-  0%,
-  100% {
-    transform: scale(1);
+  to {
+    transform: translateY(-25px) scaleX(0.95);
+  }
+}
+
+@keyframes cat-eye-roll {
+  0% {
+    transform: translate(0, 0);
+  }
+
+  25% {
+    transform: translate(3px, 0);
   }
 
   50% {
-    transform: scale(1.05);
+    transform: translate(0, 3px);
   }
-}
 
-@keyframes cat-blink {
+  75% {
+    transform: translate(-3px, 0);
+  }
 
-  0%,
-  90%,
   100% {
-    transform: scaleY(1);
-  }
-
-  95% {
-    transform: scaleY(0.1);
+    transform: translate(0, 0);
   }
 }
 
-@keyframes ear-twitch-l {
 
-  0%,
-  80%,
-  100% {
-    transform: rotate(-20deg);
-  }
-
-  90% {
-    transform: rotate(-30deg);
-  }
-}
-
-@keyframes ear-twitch-r {
-
-  0%,
-  85%,
-  100% {
-    transform: rotate(20deg);
-  }
-
-  92% {
-    transform: rotate(35deg);
-  }
-}
-
-/* Оптимизация производительности */
-@media (prefers-reduced-motion: reduce) {
-
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-}
 
 .upload-status {
   font-size: 18px;
