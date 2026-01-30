@@ -29,6 +29,9 @@ COPY --from=builder /app/templates ./templates
 # Копируем статические файлы
 COPY --from=builder /app/templates/static ./templates/static
 
+# Копируем ченджлог
+COPY changelog.md .
+
 # Открываем порт
 EXPOSE 8000
 
