@@ -48,12 +48,16 @@
 
   <div class="glass-card">
     <div class="header">
-      <div>
+      <div class="header-side">
         <a href="/" class="upload-more">нᴀ ᴦᴧᴀʙную</a>
       </div>
-      <h1>{{.AlbumID}}</h1>
-      <p>Количество изображений: {{len .Images}}</p>
-      <div>
+
+      <div class="header-main">
+        <h1>{{.AlbumID}}</h1>
+        <p>ᴋоᴧичᴇᴄᴛʙо изобᴩᴀжᴇний: {{len .Images}}</p>
+      </div>
+
+      <div class="header-side">
         <button class="copy-btn" onclick="copyAlbumUrl('{{.OwnerSessionID}}','{{.AlbumID}}',this)">ᴋоᴨиᴩоʙᴀᴛь
           ᴜʀʟ</button>
         {{if .IsOwner}}
