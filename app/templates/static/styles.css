@@ -1,5 +1,6 @@
 /* Подключение шрифтов Montserrat и Unbounded из Google Fonts с оптимизацией */
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&family=Unbounded:wght@600&display=swap&text=%D0%B0%D0%B1%D0%B2%D0%B3%D0%B4%D0%B5%D1%91%D0%B6%D0%B7%D0%B8%D0%B9%D0%BA%D0%BB%D0%BC%D0%BD%D0%BE%D0%BF%D1%80%D1%81%D1%82%D1%83%D1%84%D1%85%D1%86%D1%87%D1%88%D1%89%D1%8A%D1%8B%D1%8C%D1%8D%D1%8E%D1%8F%D0%90%D0%91%D0%92%D0%93%D0%94%D0%95%D0%81%D0%96%D0%97%D0%98%D0%99%D0%9A%D0%9B%D0%9C%D0%9D%D0%9E%D0%9F%D0%A0%D0%A1%D0%A2%D0%A3%D0%A4%D0%A5%D0%A6%D0%A7%D0%A8%D0%A9%D0%AA%D0%AB%D0%AC%D0%AD%D0%AE%D0%AF0123456789');
+
 /* Fallback для системных шрифтов */
 @font-face {
   font-family: 'Montserrat-fallback';
@@ -11,89 +12,111 @@
   size-adjust: 95%;
 }
 
+html {
+  box-sizing: border-box;
+}
+
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
+}
+
 body {
-    background-color: #161b23;
-    /* Сетка на фоне */
-    background-image:
-        linear-gradient(to right, rgba(128, 128, 128, 0.05) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(128, 128, 128, 0.05) 1px, transparent 1px);
-    background-size: 60px;
-    background-attachment: fixed;
-    font-family: 'Montserrat', 'Montserrat-fallback', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
-    color: #c9d1d9; /* Светло-серый текст */
-    margin: 0;
-    padding: 0;
-    min-height: 100vh;
-    position: relative;
-    overflow-x: hidden;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between; /* Распределяем элементы по вертикали: контент в центре, футтер внизу */
-    align-items: center; /* Центрируем контент по горизонтали */
-    padding: 20px 0; /* Изменены отступы: равномерные сверху и снизу */
+  background-color: #161b23;
+  /* Сетка на фоне */
+  background-image:
+    linear-gradient(to right, rgba(128, 128, 128, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(128, 128, 128, 0.05) 1px, transparent 1px);
+  background-size: 60px;
+  background-attachment: fixed;
+  font-family: 'Montserrat', 'Montserrat-fallback', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+  color: #c9d1d9;
+  /* Светло-серый текст */
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  /* Распределяем элементы по вертикали: контент в центре, футтер внизу */
+  align-items: center;
+  /* Центрируем контент по горизонтали */
+  padding: 20px 0;
+  /* Изменены отступы: равномерные сверху и снизу */
 }
 
 h1 {
-    font-family: 'Unbounded', 'Montserrat', sans-serif;
-    color: #ffffff;
-    text-align: center;
+  font-family: 'Unbounded', 'Montserrat', sans-serif;
+  color: #ffffff;
+  text-align: center;
 }
 
 .blob {
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(60px); /* Ключевое свойство для размытия */
-    opacity: 0.15;
-    z-index: -1; /* Чтобы были под контентом */
-    will-change: transform; /* GPU ускорение */
-    transform: translateZ(0); /* Форсируем GPU слой */
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  /* Ключевое свойство для размытия */
+  opacity: 0.15;
+  z-index: -1;
+  /* Чтобы были под контентом */
+  will-change: transform;
+  /* GPU ускорение */
+  transform: translateZ(0);
+  /* Форсируем GPU слой */
 }
 
 .blob-1 {
-    width: 500px;
-    height: 500px;
-    top: 10%;
-    left: 10%;
-    background: radial-gradient(circle, #9775fa 0%, transparent 50%);
+  width: 500px;
+  height: 500px;
+  top: 10%;
+  left: 10%;
+  background: radial-gradient(circle, #9775fa 0%, transparent 50%);
 }
 
 .blob-2 {
-    width: 600px;
-    height: 600px;
-    bottom: 10%;
-    right: 10%;
-    background: radial-gradient(circle, #22d3ee 0%, transparent 50%);
+  width: 600px;
+  height: 600px;
+  bottom: 10%;
+  right: 10%;
+  background: radial-gradient(circle, #22d3ee 0%, transparent 50%);
 }
 
 .glass-card {
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(10px); /* Самое важное свойство */
-    -webkit-backdrop-filter: blur(10px); /* Safari поддержка */
-    border-radius: 16px;
-    padding: 24px;
-    transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
-    max-width: 800px;
-    width: 100%; /* Фиксированная ширина для предотвращения CLS */
-    margin: auto;
-    position: relative;
-    z-index: 1;
-    flex: 0 1 auto;
-    will-change: background, border-color;
-    transform: translateZ(0); /* GPU ускорение */
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+  /* Самое важное свойство */
+  -webkit-backdrop-filter: blur(10px);
+  /* Safari поддержка */
+  border-radius: 16px;
+  padding: 24px;
+  transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+  max-width: 800px;
+  width: 100%;
+  /* Фиксированная ширина для предотвращения CLS */
+  margin: auto;
+  position: relative;
+  z-index: 1;
+  flex: 0 1 auto;
+  will-change: background, border-color;
+  transform: translateZ(0);
+  /* GPU ускорение */
 }
 
 .glass-card:hover {
-    background: rgba(255, 255, 255, 0.04);
-    border-color: rgba(34, 211, 238, 0.3);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(34, 211, 238, 0.3);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
 }
 
 .header-actions {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px
 }
 
 .inline-form {
@@ -106,74 +129,74 @@ h1 {
 }
 
 .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 30px;
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 16px;
-    padding: 24px;
-    transition: background 0.3s ease, border-color 0.3s ease;
-    position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 24px;
+  transition: background 0.3s ease, border-color 0.3s ease;
+  position: relative;
 }
 
 .header:hover {
-    background: rgba(255, 255, 255, 0.04);
-    border-color: rgba(34, 211, 238, 0.3);
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(34, 211, 238, 0.3);
 }
 
 .header .center {
-    flex: 1;
-    text-align: center;
+  flex: 1;
+  text-align: center;
 }
 
 .header .center h1 {
-    margin: 0;
-    text-align: center;
-    font-family: 'Montserrat', sans-serif;
-    color: #c9d1d9;
+  margin: 0;
+  text-align: center;
+  font-family: 'Montserrat', sans-serif;
+  color: #c9d1d9;
 }
 
 .header .center p {
-    margin: 5px 0 0 0;
-    font-size: 14px;
-    color: #cccccc;
+  margin: 5px 0 0 0;
+  font-size: 14px;
+  color: #cccccc;
 }
 
-.header > div:first-child {
-    z-index: 1;
+.header>div:first-child {
+  z-index: 1;
 }
 
-.header > div:last-child {
-    z-index: 1;
-    display: flex;
-    gap: 10px;
+.header>div:last-child {
+  z-index: 1;
+  display: flex;
+  gap: 10px;
 }
 
 .upload-container {
-    margin: 30px 0
+  margin: 30px 0
 }
 
 .upload-area {
-    border: 3px dashed rgba(255, 255, 255, 0.2);
-    border-radius: 16px;
-    padding: 40px;
-    text-align: center;
-    margin: 20px 0;
-    background: rgba(255, 255, 255, 0.02);
-    cursor: pointer;
-    transition: border-color 0.3s ease, background 0.3s ease;
+  border: 3px dashed rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  padding: 40px;
+  text-align: center;
+  margin: 20px 0;
+  background: rgba(255, 255, 255, 0.02);
+  cursor: pointer;
+  transition: border-color 0.3s ease, background 0.3s ease;
 }
 
 .upload-area:hover {
-    border-color: rgba(34, 211, 238, 0.5);
-    background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(34, 211, 238, 0.5);
+  background: rgba(255, 255, 255, 0.04);
 }
 
 .upload-area.dragover {
-    border-color: #4CAF50;
-    background: rgba(76, 175, 80, 0.1);
+  border-color: #4CAF50;
+  background: rgba(76, 175, 80, 0.1);
 }
 
 .upload-icon {
@@ -218,17 +241,17 @@ input[type="file"] {
 }
 
 .album-item {
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 16px;
-    padding: 15px;
-    background: rgba(255, 255, 255, 0.02);
-    text-align: center;
-    transition: background 0.3s ease, border-color 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 15px;
+  background: rgba(255, 255, 255, 0.02);
+  text-align: center;
+  transition: background 0.3s ease, border-color 0.3s ease;
 }
 
 .album-link:hover .album-item {
-    background: rgba(255, 255, 255, 0.04);
-    border-color: rgba(34, 211, 238, 0.3);
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(34, 211, 238, 0.3);
 }
 
 .album-link {
@@ -247,89 +270,92 @@ input[type="file"] {
 }
 
 .delete-user-btn {
-    background: rgba(211, 47, 47, 0.2);
-    border: 1px solid rgba(21, 47, 47, 0.4);
-    color: #ff6b6b;
-    padding: 8px 16px;
-    border-radius: 12px;
-    cursor: pointer;
-    font-family: 'Montserrat', sans-serif;
-    transition: all 0.2s ease;
-    text-decoration: none;
-    display: inline-block;
-    text-align: center;
-    font-size: 14px;
+  background: rgba(211, 47, 47, 0.2);
+  border: 1px solid rgba(21, 47, 47, 0.4);
+  color: #ff6b6b;
+  padding: 8px 16px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-family: 'Montserrat', sans-serif;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+  font-size: 14px;
 }
 
 .delete-user-btn:hover {
-    background: rgba(211, 47, 47, 0.3);
-    border-color: rgba(211, 47, 47, 0.6);
-    color: #ffffff;
+  background: rgba(211, 47, 47, 0.3);
+  border-color: rgba(211, 47, 47, 0.6);
+  color: #ffffff;
 }
 
 .convert-btn {
-    background: rgba(76, 175, 80, 0.2);
-    border: 1px solid rgba(76, 175, 80, 0.4);
-    color: #4CAF50;
-    padding: 8px 16px;
-    border-radius: 12px;
-    cursor: pointer;
-    font-family: 'Montserrat', sans-serif;
-    transition: all 0.2s ease;
-    text-decoration: none;
-    display: inline-block;
-    text-align: center;
-    font-size: 14px;
+  background: rgba(76, 175, 80, 0.2);
+  border: 1px solid rgba(76, 175, 80, 0.4);
+  color: #4CAF50;
+  padding: 8px 16px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-family: 'Montserrat', sans-serif;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+  font-size: 14px;
 }
 
 .convert-btn:hover {
-    background: rgba(76, 175, 80, 0.3);
-    border-color: rgba(76, 175, 80, 0.6);
-    color: #ffffff;
+  background: rgba(76, 175, 80, 0.3);
+  border-color: rgba(76, 175, 80, 0.6);
+  color: #ffffff;
 }
 
 .upload-more {
-    background: rgba(76, 175, 80, 0.2);
-    border: 1px solid rgba(76, 175, 80, 0.4);
-    color: #4CAF50;
-    padding: 10px 20px;
-    border-radius: 12px;
-    cursor: pointer;
-    font-family: 'Montserrat', sans-serif;
-    transition: all 0.2s ease;
-    text-decoration: none;
-    display: inline-block;
-    text-align: center;
+  background: rgba(76, 175, 80, 0.2);
+  border: 1px solid rgba(76, 175, 80, 0.4);
+  color: #4CAF50;
+  padding: 10px 20px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-family: 'Montserrat', sans-serif;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
 }
 
 .upload-more:hover {
-    background: rgba(76, 175, 80, 0.3);
-    border-color: rgba(76, 175, 80, 0.6);
-    color: #ffffff;
+  background: rgba(76, 175, 80, 0.3);
+  border-color: rgba(76, 175, 80, 0.6);
+  color: #ffffff;
 }
 
 .image-grid {
   display: flex;
   flex-direction: column;
   gap: 20px;
-  min-height: 300px; /* Минимальная высота для предотвращения CLS */
+  min-height: 300px;
+  /* Минимальная высота для предотвращения CLS */
 }
 
 .image-item {
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 16px;
-    overflow: hidden;
-    background: rgba(255, 255, 255, 0.02);
-    display: flex;
-    flex-direction: column;
-    transition: background 0.3s ease, border-color 0.3s ease;
-    contain: layout style paint; /* CSS containment для производительности */
-    min-height: 200px; /* Минимальная высота для предотвращения CLS */
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.02);
+  display: flex;
+  flex-direction: column;
+  transition: background 0.3s ease, border-color 0.3s ease;
+  contain: layout style paint;
+  /* CSS containment для производительности */
+  min-height: 200px;
+  /* Минимальная высота для предотвращения CLS */
 }
 
 .image-item:hover {
-    background: rgba(255, 255, 255, 0.04);
-    border-color: rgba(34, 211, 238, 0.3);
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(34, 211, 238, 0.3);
 }
 
 .image-item img {
@@ -338,10 +364,14 @@ input[type="file"] {
   display: block;
   cursor: zoom-in;
   transition: transform 0.3s ease;
-  content-visibility: auto; /* Оптимизация рендеринга */
-  aspect-ratio: 16 / 9; /* Резервируем место для изображения */
-  object-fit: contain; /* Сохраняем пропорции */
-  background: rgba(255, 255, 255, 0.02); /* Фон пока изображение загружается */
+  content-visibility: auto;
+  /* Оптимизация рендеринга */
+  aspect-ratio: 16 / 9;
+  /* Резервируем место для изображения */
+  object-fit: contain;
+  /* Сохраняем пропорции */
+  background: rgba(255, 255, 255, 0.02);
+  /* Фон пока изображение загружается */
 }
 
 /* Стили для оверлея просмотра изображений */
@@ -380,7 +410,8 @@ input[type="file"] {
 
 .image-info {
   padding: 15px;
-  min-height: 80px; /* Фиксированная минимальная высота для предотвращения CLS */
+  min-height: 80px;
+  /* Фиксированная минимальная высота для предотвращения CLS */
 }
 
 .image-name {
@@ -393,80 +424,80 @@ input[type="file"] {
 }
 
 .copy-btn {
-    background: rgba(33, 150, 243, 0.2);
-    border: 1px solid rgba(33, 150, 243, 0.4);
-    color: #2196F3;
-    padding: 5px 10px;
-    border-radius: 12px;
-    cursor: pointer;
-    font-family: 'Montserrat', sans-serif;
-    transition: all 0.2s ease;
-    font-size: 12px;
+  background: rgba(33, 150, 243, 0.2);
+  border: 1px solid rgba(33, 150, 243, 0.4);
+  color: #2196F3;
+  padding: 5px 10px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-family: 'Montserrat', sans-serif;
+  transition: all 0.2s ease;
+  font-size: 12px;
 }
 
 .copy-btn:hover {
-    background: rgba(33, 150, 243, 0.3);
-    border-color: rgba(33, 150, 243, 0.6);
-    color: #ffffff;
+  background: rgba(33, 150, 243, 0.3);
+  border-color: rgba(33, 150, 243, 0.6);
+  color: #ffffff;
 }
 
 .copy-btn.copied {
-    background: rgba(76, 175, 80, 0.3);
-    border-color: rgba(76, 175, 80, 0.6);
-    color: #ffffff;
+  background: rgba(76, 175, 80, 0.3);
+  border-color: rgba(76, 175, 80, 0.6);
+  color: #ffffff;
 }
 
 .delete-btn {
-    background: rgba(244, 67, 54, 0.2);
-    border: 1px solid rgba(244, 67, 54, 0.4);
-    color: #f44336;
-    padding: 5px 10px;
-    border-radius: 12px;
-    cursor: pointer;
-    font-family: 'Montserrat', sans-serif;
-    transition: all 0.2s ease;
-    font-size: 12px;
-    margin-left: 5px;
+  background: rgba(244, 67, 54, 0.2);
+  border: 1px solid rgba(244, 67, 54, 0.4);
+  color: #f44336;
+  padding: 5px 10px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-family: 'Montserrat', sans-serif;
+  transition: all 0.2s ease;
+  font-size: 12px;
+  margin-left: 5px;
 }
 
 .delete-btn:hover {
-    background: rgba(24, 67, 54, 0.3);
-    border-color: rgba(244, 67, 54, 0.6);
-    color: #ffffff;
+  background: rgba(24, 67, 54, 0.3);
+  border-color: rgba(244, 67, 54, 0.6);
+  color: #ffffff;
 }
 
 .delete-album-btn {
-    background: rgba(255, 87, 34, 0.2);
-    border: 1px solid rgba(25, 87, 34, 0.4);
-    color: #ff5722;
-    padding: 10px 20px;
-    border-radius: 12px;
-    cursor: pointer;
-    font-family: 'Montserrat', sans-serif;
-    transition: all 0.2s ease;
-    text-decoration: none;
-    display: inline-block;
-    text-align: center;
+  background: rgba(255, 87, 34, 0.2);
+  border: 1px solid rgba(25, 87, 34, 0.4);
+  color: #ff5722;
+  padding: 10px 20px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-family: 'Montserrat', sans-serif;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
 }
 
 .delete-album-btn:hover {
-    background: rgba(255, 87, 34, 0.3);
-    border-color: rgba(255, 87, 34, 0.6);
-    color: #ffffff;
+  background: rgba(255, 87, 34, 0.3);
+  border-color: rgba(255, 87, 34, 0.6);
+  color: #ffffff;
 }
 
 .empty-state {
-    text-align: center;
-    padding: 60px 20px;
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 16px;
-    transition: background 0.3s ease, border-color 0.3s ease;
+  text-align: center;
+  padding: 60px 20px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  transition: background 0.3s ease, border-color 0.3s ease;
 }
 
 .empty-state:hover {
-    background: rgba(255, 255, 255, 0.04);
-    border-color: rgba(34, 211, 238, 0.3);
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(34, 211, 238, 0.3);
 }
 
 .empty-icon {
@@ -482,23 +513,23 @@ input[type="file"] {
 }
 
 .empty-link {
-    background: rgba(76, 175, 80, 0.2);
-    border: 1px solid rgba(76, 175, 80, 0.4);
-    color: #4CAF50;
-    padding: 10px 20px;
-    border-radius: 12px;
-    cursor: pointer;
-    font-family: 'Montserrat', sans-serif;
-    transition: all 0.2s ease;
-    text-decoration: none;
-    display: inline-block;
-    text-align: center;
+  background: rgba(76, 175, 80, 0.2);
+  border: 1px solid rgba(76, 175, 80, 0.4);
+  color: #4CAF50;
+  padding: 10px 20px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-family: 'Montserrat', sans-serif;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
 }
 
 .empty-link:hover {
-    background: rgba(76, 175, 80, 0.3);
-    border-color: rgba(76, 175, 80, 0.6);
-    color: #ffffff;
+  background: rgba(76, 175, 80, 0.3);
+  border-color: rgba(76, 175, 80, 0.6);
+  color: #ffffff;
 }
 
 @media(max-width:768px) {
@@ -507,7 +538,7 @@ input[type="file"] {
     gap: 15px;
     text-align: center
   }
-  
+
   .header h1 {
     position: static;
     transform: none;
@@ -515,15 +546,15 @@ input[type="file"] {
     text-align: center;
     margin-top: 10px;
   }
-  
-  .header > div:first-child,
-  .header > div:last-child {
+
+  .header>div:first-child,
+  .header>div:last-child {
     position: static;
     transform: none;
     left: auto;
   }
-  
-  .header > div:last-child {
+
+  .header>div:last-child {
     display: flex;
     justify-content: center;
     gap: 10px;
@@ -532,28 +563,28 @@ input[type="file"] {
 
 /* Индикатор загрузки */
 .upload-overlay {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.85);
-    z-index: 1000;
-    justify-content: center;
-    align-items: center
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.85);
+  z-index: 1000;
+  justify-content: center;
+  align-items: center
 }
 
 .upload-overlay.active {
-    display: flex
+  display: flex
 }
 
 .upload-progress {
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 16px;
-    padding: 40px;
-    text-align: center;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 40px;
+  text-align: center;
 }
 
 .upload-spinner {
@@ -567,11 +598,14 @@ input[type="file"] {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg) }
+  to {
+    transform: rotate(360deg)
+  }
 }
 
 /* Оптимизация производительности */
 @media (prefers-reduced-motion: reduce) {
+
   *,
   *::before,
   *::after {
@@ -715,4 +749,147 @@ input[type="file"] {
 
 .close:hover {
   color: black;
+}
+
+/* Стили для рекламного баннера VPN */
+.promo-banner {
+  background: rgba(34, 211, 238, 0.03);
+  border: 1px solid rgba(34, 211, 238, 0.15);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: 16px;
+  padding: 16px 24px;
+  margin: 20px auto;
+  max-width: 800px;
+  width: calc(100% - 40px);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1;
+  position: relative;
+  box-sizing: border-box;
+}
+
+.promo-banner:hover {
+  background: rgba(34, 211, 238, 0.06);
+  border-color: rgba(34, 211, 238, 0.4);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.promo-content {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.promo-icon {
+  font-size: 28px;
+  filter: drop-shadow(0 0 8px rgba(34, 211, 238, 0.3));
+  user-select: none;
+}
+
+.promo-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.promo-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #ffffff;
+  font-family: 'Unbounded', 'Montserrat', sans-serif;
+  letter-spacing: 0.5px;
+}
+
+.promo-subtitle {
+  font-size: 13px;
+  color: #8b949e;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.q-red {
+  color: #ff4d4d;
+}
+
+.ray-white {
+  color: #ffffff;
+}
+
+.vpn-red {
+  color: #ff4d4d;
+}
+
+.free-badge {
+  background: rgba(76, 175, 80, 0.15);
+  color: #4CAF50;
+  border: 1px solid rgba(76, 175, 80, 0.4);
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 10px;
+  text-transform: uppercase;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
+.promo-logo-img {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 8px rgba(34, 211, 238, 0.3));
+}
+
+.promo-btn {
+  background: rgba(34, 211, 238, 0.1);
+  border: 1px solid rgba(34, 211, 238, 0.3);
+  color: #22d3ee;
+  padding: 10px 20px;
+  border-radius: 12px;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.promo-btn:hover {
+  background: #22d3ee;
+  color: #000000;
+  border-color: #22d3ee;
+  box-shadow: 0 0 20px rgba(34, 211, 238, 0.4);
+}
+
+@media (max-width: 600px) {
+  .promo-banner {
+    flex-direction: column;
+    text-align: center;
+    padding: 20px;
+    gap: 16px;
+    width: calc(100% - 24px);
+    /* Больше места по бокам на маленьких экранах */
+    margin: 10px auto;
+  }
+
+  .promo-content {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .promo-subtitle {
+    justify-content: center;
+    flex-wrap: wrap;
+    /* Чтобы бейдж не ломал строку */
+  }
+
+  .glass-card {
+    width: calc(100% - 24px);
+    padding: 16px;
+  }
 }
