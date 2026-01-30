@@ -152,7 +152,10 @@ h1 {
   gap: 10px;
   align-items: center;
   min-width: 120px;
-  /* Чтобы центр не слишком сильно гулял */
+}
+
+.inline-form {
+  display: contents;
 }
 
 .header-main {
@@ -564,20 +567,11 @@ input[type="file"] {
   text-align: center;
 }
 
-.upload-spinner {
-  width: 48px;
-  height: 48px;
-  border: 4px solid #555;
-  border-top-color: #4CAF50;
-  border-radius: 50%;
+.upload-cat {
+  width: 120px;
+  height: auto;
   margin: 0 auto 20px;
-  animation: spin 1s linear infinite
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg)
-  }
+  display: block;
 }
 
 /* Оптимизация производительности */
