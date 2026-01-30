@@ -274,27 +274,6 @@ input[type="file"] {
   margin-top: 5px
 }
 
-.delete-user-btn {
-  background: rgba(211, 47, 47, 0.2);
-  border: 1px solid rgba(21, 47, 47, 0.4);
-  color: #ff6b6b;
-  padding: 8px 16px;
-  border-radius: 12px;
-  cursor: pointer;
-  font-family: 'Montserrat', sans-serif;
-  transition: all 0.2s ease;
-  text-decoration: none;
-  display: inline-block;
-  text-align: center;
-  font-size: 14px;
-}
-
-.delete-user-btn:hover {
-  background: rgba(211, 47, 47, 0.3);
-  border-color: rgba(211, 47, 47, 0.6);
-  color: #ffffff;
-}
-
 .convert-btn {
   background: rgba(76, 175, 80, 0.2);
   border: 1px solid rgba(76, 175, 80, 0.4);
@@ -453,42 +432,31 @@ input[type="file"] {
 }
 
 .delete-btn {
-  background: rgba(244, 67, 54, 0.2);
-  border: 1px solid rgba(244, 67, 54, 0.4);
-  color: #f44336;
-  padding: 5px 10px;
+  background: rgba(255, 77, 77, 0.1);
+  border: 1px solid rgba(255, 77, 77, 0.3);
+  color: #ff4d4d;
+  padding: 8px 16px;
   border-radius: 12px;
   cursor: pointer;
   font-family: 'Montserrat', sans-serif;
   transition: all 0.2s ease;
-  font-size: 12px;
-  margin-left: 5px;
+  font-size: 13px;
+  text-decoration: none;
+  display: inline-block;
 }
 
 .delete-btn:hover {
-  background: rgba(24, 67, 54, 0.3);
-  border-color: rgba(244, 67, 54, 0.6);
+  background: #ff4d4d;
+  border-color: #ff4d4d;
   color: #ffffff;
+  box-shadow: 0 0 15px rgba(255, 77, 77, 0.3);
 }
 
-.delete-album-btn {
-  background: rgba(255, 87, 34, 0.2);
-  border: 1px solid rgba(25, 87, 34, 0.4);
-  color: #ff5722;
-  padding: 10px 20px;
-  border-radius: 12px;
-  cursor: pointer;
-  font-family: 'Montserrat', sans-serif;
-  transition: all 0.2s ease;
-  text-decoration: none;
-  display: inline-block;
-  text-align: center;
-}
-
-.delete-album-btn:hover {
-  background: rgba(255, 87, 34, 0.3);
-  border-color: rgba(255, 87, 34, 0.6);
-  color: #ffffff;
+/* Компактный вариант для грида изображений */
+.image-info .delete-btn {
+  padding: 5px 10px;
+  font-size: 12px;
+  margin-left: 5px;
 }
 
 .empty-state {
