@@ -151,6 +151,14 @@
 
   <!-- Оверлей для просмотра изображений -->
   <footer class="footer">
+    <div class="footer-theme-selector">
+      <select id="themeSelect" class="theme-select" onchange="changeTheme(this.value)">
+        <option value="crystal">💎 ᴋᴩиᴄᴛᴀᴧᴧ</option>
+        <option value="simple">⚡ ᴨᴩоᴄᴛᴀя</option>
+        <option value="midnight">🌙 ᴨоᴧночь</option>
+        <option value="sunset">🌅 зᴀᴋᴀᴛ</option>
+      </select>
+    </div>
     <p>ʙᴄᴇᴦо изобᴩᴀжᴇний нᴀ ᴄᴇᴩʙиᴄᴇ: {{.TotalImageCount}}</p>
     <p>ᴄʀᴇᴀᴛᴇᴅ ᴡɪᴛʜ <i data-lucide="heart" class="heart-icon"></i> ʙʏ <a href="https://t.me/q0wqex"
         class="telegram-link">ǫ0ᴡǫᴇx</a></p>
