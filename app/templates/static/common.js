@@ -386,6 +386,21 @@ function convertToWebP(file) {
   });
 }
 
+// Сравнение семантических версий (v1 > v2 => 1, v1 < v2 => -1, v1 == v2 => 0)
+function compareVersions(v1, v2) {
+  if (!v1) return 1;
+  if (!v2) return 1;
+  const a = v1.split('.').map(Number);
+  const b = v2.split('.').map(Number);
+  for (let i = 0; i < Math.max(a.length, b.length); i++) {
+    const na = a[i] || 0;
+    const nb = b[i] || 0;
+    if (na > nb) return 1;
+    if (na < nb) return -1;
+  }
+  return 0;
+}
+
 // Работа с ченджлогом
 function checkChangelog() {
   fetch('/changelog')
@@ -394,45 +409,82 @@ function checkChangelog() {
       if (!data.data || !data.data.content) return;
 
       const content = data.data.content;
-      // Находим последнюю версию (первый заголовок ##)
+      // Находим все версии (заголовки ## [X.X.X])
       const versionMatch = content.match(/## \[?([\d.]+)\]?/);
       if (!versionMatch) return;
 
       const latestVersion = versionMatch[1];
       const savedVersion = localStorage.getItem('last_seen_version');
 
-      if (latestVersion !== savedVersion) {
-        showChangelog(content, latestVersion);
+      // Если последняя версия новее сохраненной
+      if (compareVersions(latestVersion, savedVersion) > 0) {
+        showChangelog(content, latestVersion, savedVersion);
       }
     })
     .catch(error => console.error('Error fetching changelog:', error));
 }
 
-function showChangelog(content, version) {
+function showChangelog(content, latestVersion, savedVersion) {
   const modal = document.getElementById('changelogModal');
   const body = document.getElementById('changelogBody');
 
   if (!modal || !body) return;
 
-  // Берем только последнюю секцию до следующего ## или конца файла
-  const parts = content.split(/## \[?[\d.]+\]?/);
-  // parts[0] - заголовок # Changelog и все что до первой версии
-  // parts[1] - контент последней версии
-  let latestContent = parts[1] || "";
+  // Регулярка для поиска заголовков версий
+  const versionRegex = /## \[?([\d.]+)\]?[^\n]*/g;
+  const matches = [];
+  let match;
 
-  // Простой парсинг Markdown (заголовки и списки)
-  let html = latestContent
-    .trim()
-    .replace(/^### (.*$)/gim, '<h3>$1</h3>')
-    .replace(/^\- (.*$)/gim, '<li>$1</li>');
+  while ((match = versionRegex.exec(content)) !== null) {
+    matches.push({
+      version: match[1],
+      header: match[0],
+      index: match.index
+    });
+  }
 
-  // Группируем li в ul
-  html = html.replace(/(<li>.*<\/li>(\n<li>.*<\/li>)*)/g, '<ul>$1</ul>');
+  let fullHtml = '';
+  let processedVersions = 0;
 
-  body.innerHTML = html;
-  modal.dataset.version = version;
+  for (let i = 0; i < matches.length; i++) {
+    const currentMatch = matches[i];
+
+    // Показываем только если версия новее сохраненной
+    if (compareVersions(currentMatch.version, savedVersion) > 0) {
+      const nextIndex = (i + 1 < matches.length) ? matches[i + 1].index : content.length;
+      let sectionContent = content.substring(currentMatch.index + currentMatch.header.length, nextIndex).trim();
+
+      // Очистка от разделителей
+      sectionContent = sectionContent.replace(/---/g, '');
+
+      let html = sectionContent
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') // Жирный текст
+        .replace(/`(.*?)`/g, '<code>$1</code>')         // Инлайн код
+        .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+        .replace(/^\- (.*$)/gim, '<li>$1</li>');
+
+      // Группируем li в ul (только внутри текущей секции)
+      html = html.replace(/(<li>.*<\/li>(\s*<li>.*<\/li>)*)/g, '<ul>$1</ul>');
+
+      fullHtml += `
+        <div class="changelog-version-section">
+          <div class="changelog-version-tag">Версия ${currentMatch.version}</div>
+          ${html}
+        </div>
+      `;
+      processedVersions++;
+    } else {
+      // Версии обычно идут по убыванию, можно остановиться
+      break;
+    }
+  }
+
+  if (processedVersions === 0) return;
+
+  body.innerHTML = fullHtml;
+  modal.dataset.version = latestVersion;
   modal.classList.add('active');
-  document.body.style.overflow = 'hidden'; // Запрещаем прокрутку фона
+  document.body.style.overflow = 'hidden';
 }
 
 function closeChangelog() {
