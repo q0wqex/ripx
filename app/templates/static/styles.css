@@ -809,6 +809,39 @@ input[type="file"] {
   text-decoration: underline;
 }
 
+.heart-icon {
+  display: inline-block;
+  vertical-align: middle;
+  width: 16px;
+  height: 16px;
+  color: #ff4d4d;
+  fill: #ff4d4d;
+  margin: 0 4px;
+}
+
+.upload-icon lucide,
+.upload-icon i {
+  width: 48px;
+  height: 48px;
+  stroke-width: 1.5px;
+}
+
+.empty-icon lucide,
+.empty-icon i {
+  width: 64px;
+  height: 64px;
+  stroke-width: 1px;
+}
+
+.copy-btn i,
+.delete-btn i,
+.upload-more i {
+  width: 16px;
+  height: 16px;
+  margin-right: 8px;
+  vertical-align: -3px;
+}
+
 .telegram-link {
   color: #4FC3F7;
   text-decoration: none;

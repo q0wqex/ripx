@@ -31,13 +31,18 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Инициализация темы
   initTheme();
+
+  // Инициализация иконок Lucide
+  if (window.lucide) {
+    lucide.createIcons();
+  }
 });
 
 // Функции для работы с темами
 function initTheme() {
   const savedTheme = localStorage.getItem('ripx_theme') || 'crystal';
   applyTheme(savedTheme);
-  
+
   const themeSelect = document.getElementById('themeSelect');
   if (themeSelect) {
     themeSelect.value = savedTheme;
@@ -54,6 +59,10 @@ function applyTheme(themeName) {
     document.documentElement.removeAttribute('data-theme');
   } else {
     document.documentElement.setAttribute('data-theme', themeName);
+  }
+  // Перерисовываем иконки, если нужно (например, если они зависят от темы)
+  if (window.lucide) {
+    lucide.createIcons();
   }
 }
 
@@ -182,7 +191,7 @@ function getSessionID() {
 // HTML шаблон для пустого состояния (используется в deleteImage и album.html)
 const EMPTY_STATE_HTML = `
   <div class="empty-state">
-    <div class="empty-icon">📷</div>
+    <div class="empty-icon"><i data-lucide="image-off"></i></div>
     <div class="empty-text">у ʙᴀᴄ ᴨоᴋᴀ нᴇᴛ зᴀᴦᴩужᴇнных изобᴩᴀжᴇний</div>
     <a href="/" class="empty-link">зᴀᴦᴩузиᴛь ᴨᴇᴩʙоᴇ изобᴩᴀжᴇниᴇ</a>
   </div>
@@ -268,6 +277,9 @@ function deleteImage(sessionID, albumID, filename, button) {
           if (!imageGrid.querySelector('.image-item')) {
             // Показываем пустое состояние
             imageGrid.innerHTML = EMPTY_STATE_HTML;
+            if (window.lucide) {
+              lucide.createIcons();
+            }
           }
         }, 300);
       } else {

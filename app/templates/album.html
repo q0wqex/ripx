@@ -12,6 +12,8 @@
   <link rel="dns-prefetch" href="https://fonts.googleapis.com">
   <link rel="dns-prefetch" href="https://fonts.gstatic.com">
   <link rel="stylesheet" href="/static/styles.css">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 
 <body>
@@ -49,7 +51,7 @@
   <div class="glass-card">
     <div class="header">
       <div class="header-side">
-        <a href="/" class="upload-more">нᴀ ᴦᴧᴀʙную</a>
+        <a href="/" class="upload-more"><i data-lucide="arrow-left"></i> нᴀ ᴦᴧᴀʙную</a>
       </div>
 
       <div class="header-main">
@@ -58,13 +60,14 @@
       </div>
 
       <div class="header-side">
-        <button class="copy-btn" onclick="copyAlbumUrl('{{.OwnerSessionID}}','{{.AlbumID}}',this)">ᴋоᴨиᴩоʙᴀᴛь
+        <button class="copy-btn" onclick="copyAlbumUrl('{{.OwnerSessionID}}','{{.AlbumID}}',this)"><i
+            data-lucide="link"></i> ᴋоᴨиᴩоʙᴀᴛь
           ᴜʀʟ</button>
         {{if .IsOwner}}
         <form action="/delete-album" method="POST" class="inline-form"
           onsubmit="return confirm('Вы уверены, что хотите удалить весь альбом со всеми изображениями?')">
           <input type="hidden" name="album_id" value="{{.AlbumID}}">
-          <button type="submit" class="delete-btn">удᴀᴧиᴛь</button>
+          <button type="submit" class="delete-btn"><i data-lucide="trash-2"></i> удᴀᴧиᴛь</button>
         </form>
         {{end}}
       </div>
@@ -73,7 +76,7 @@
     {{if .IsOwner}}
     <div class="upload-container">
       <div class="upload-area" id="uploadArea">
-        <div class="upload-icon">📁</div>
+        <div class="upload-icon"><i data-lucide="upload-cloud"></i></div>
         <div class="upload-text">ᴨᴇᴩᴇᴛᴀщиᴛᴇ изобᴩᴀжᴇния ᴄюдᴀ</div>
         <div class="upload-hint">иᴧи нᴀжʍиᴛᴇ дᴧя ʙыбоᴩᴀ ɸᴀйᴧоʙ</div>
       </div>
@@ -112,11 +115,11 @@
         <div class="image-info">
           <div class="image-name">{{.Filename}}</div>
           <div class="image-actions">
-            <button class="copy-btn"
-              onclick="copyUrl('{{$.OwnerSessionID}}','{{$.AlbumID}}','{{.Filename}}',this)">ᴋоᴨиᴩоʙᴀᴛь ᴜʀʟ</button>
+            <button class="copy-btn" onclick="copyUrl('{{$.OwnerSessionID}}','{{$.AlbumID}}','{{.Filename}}',this)"><i
+                data-lucide="copy"></i> ᴋоᴨиᴩоʙᴀᴛь ᴜʀʟ</button>
             {{if $.IsOwner}}
-            <button class="delete-btn"
-              onclick="deleteImage('{{$.SessionID}}','{{$.AlbumID}}','{{.Filename}}',this)">удᴀᴧиᴛь</button>
+            <button class="delete-btn" onclick="deleteImage('{{$.SessionID}}','{{$.AlbumID}}','{{.Filename}}',this)"><i
+                data-lucide="trash-2"></i> удᴀᴧиᴛь</button>
             {{end}}
           </div>
         </div>
@@ -125,7 +128,7 @@
     </div>
     {{else}}
     <div class="empty-state">
-      <div class="empty-icon">📷</div>
+      <div class="empty-icon"><i data-lucide="image-off"></i></div>
       <div class="empty-text">у ʙᴀᴄ ᴨоᴋᴀ нᴇᴛ зᴀᴦᴩужᴇнных изобᴩᴀжᴇний</div>
     </div>
     {{end}}
@@ -149,7 +152,8 @@
   <!-- Оверлей для просмотра изображений -->
   <footer class="footer">
     <p>ʙᴄᴇᴦо изобᴩᴀжᴇний нᴀ ᴄᴇᴩʙиᴄᴇ: {{.TotalImageCount}}</p>
-    <p>ᴄʀᴇᴀᴛᴇᴅ ᴡɪᴛʜ ❤️ ʙʏ <a href="https://t.me/q0wqex" class="telegram-link">ǫ0ᴡǫᴇx</a></p>
+    <p>ᴄʀᴇᴀᴛᴇᴅ ᴡɪᴛʜ <i data-lucide="heart" class="heart-icon"></i> ʙʏ <a href="https://t.me/q0wqex"
+        class="telegram-link">ǫ0ᴡǫᴇx</a></p>
     <p>ᴅᴇsɪɢɴ ɪɴsᴘɪʀᴇᴅ ʙʏ <a href="https://remna.st/" class="telegram-link">ʀᴇᴍɴᴀᴡᴀᴠᴇ</a></p>
   </footer>
   <div id="image-viewer-overlay" class="image-viewer-overlay" onclick="closeZoom()">
