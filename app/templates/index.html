@@ -12,6 +12,8 @@
   <link rel="dns-prefetch" href="https://fonts.googleapis.com">
   <link rel="dns-prefetch" href="https://fonts.gstatic.com">
   <link rel="stylesheet" href="/static/styles.css">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 
 <body>
@@ -50,14 +52,13 @@
     <div class="header-actions">
       <p>жиʙой, дᴀжᴇ ᴋоᴦдᴀ ᴧᴇжиᴛ</p>
       <div>
-
         <button type="button" class="delete-btn" onclick="deleteUser()">удᴀᴧиᴛь ᴨᴩоɸиᴧь</button>
       </div>
     </div>
 
     <div class="upload-container">
       <div class="upload-area" id="uploadArea">
-        <div class="upload-icon">📁</div>
+        <div class="upload-icon"><i data-lucide="upload-cloud"></i></div>
         <div class="upload-text">ᴨᴇᴩᴇᴛᴀщиᴛᴇ изобᴩᴀжᴇния ᴄюдᴀ</div>
         <div class="upload-hint">иᴧи нᴀжʍиᴛᴇ дᴧя ʙыбоᴩᴀ ɸᴀйᴧоʙ</div>
       </div>
@@ -121,8 +122,17 @@
   </div>
 
   <footer class="footer">
+    <div class="footer-theme-selector">
+      <select id="themeSelect" class="theme-select" onchange="changeTheme(this.value)">
+        <option value="crystal">💎 ᴋᴩиᴄᴛᴀᴧᴧ</option>
+        <option value="simple">⚡ ᴨᴩоᴄᴛᴀя</option>
+        <option value="midnight">🌙 ᴨоᴧночь</option>
+        <option value="sunset">🌅 зᴀᴋᴀᴛ</option>
+      </select>
+    </div>
     <p>ʙᴄᴇᴦо изобᴩᴀжᴇний нᴀ ᴄᴇᴩʙиᴄᴇ: {{.TotalImageCount}}</p>
-    <p>ᴄʀᴇᴀᴛᴇᴅ ᴡɪᴛʜ ❤️ ʙʏ <a href="https://t.me/q0wqex" class="telegram-link">ǫ0ᴡǫᴇx</a></p>
+    <p>ᴄʀᴇᴀᴛᴇᴅ ᴡɪᴛʜ <i data-lucide="heart" class="heart-icon"></i> ʙʏ <a href="https://t.me/q0wqex"
+        class="telegram-link">ǫ0ᴡǫᴇx</a></p>
     <p>ᴅᴇsɪɢɴ ɪɴsᴘɪʀᴇᴅ ʙʏ <a href="https://remna.st/" class="telegram-link">ʀᴇᴍɴᴀᴡᴀᴠᴇ</a></p>
   </footer>
 
