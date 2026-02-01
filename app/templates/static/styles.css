@@ -28,6 +28,9 @@
   --blur-val: 10px;
   --card-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
   --grid-color: rgba(128, 128, 128, 0.05);
+  --transition: 0.3s ease;
+  --anim-speed: 1s;
+  --radius: 16px;
 }
 
 [data-theme="simple"] {
@@ -37,13 +40,17 @@
   --accent-color: #58a6ff;
   --accent-hover: #1f6feb;
   --glass-bg: #161b22;
-  --glass-bg-hover: #1c2128;
+  --glass-bg-hover: #161b22;
   --glass-border: #30363d;
-  --glass-border-hover: #58a6ff;
+  --glass-border-hover: #30363d;
   --blob-1: transparent;
   --blob-2: transparent;
   --blur-val: 0px;
   --card-shadow: none;
+  --grid-color: transparent;
+  --transition: 0s;
+  --anim-speed: 0s;
+  --radius: 4px;
 }
 
 [data-theme="midnight"] {
@@ -155,9 +162,9 @@ h1 {
   /* Самое важное свойство */
   -webkit-backdrop-filter: blur(var(--blur-val));
   /* Safari поддержка */
-  border-radius: 16px;
+  border-radius: var(--radius);
   padding: 24px;
-  transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+  transition: background var(--transition), border-color var(--transition), box-shadow var(--transition);
   max-width: 800px;
   width: 100%;
   /* Фиксированная ширина для предотвращения CLS */
@@ -196,7 +203,7 @@ h1 {
   border: 1px solid var(--glass-border);
   color: var(--text-color);
   padding: 8px 12px;
-  border-radius: 12px;
+  border-radius: calc(var(--radius) * 0.75);
   font-family: 'Montserrat', sans-serif;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -230,9 +237,9 @@ h1 {
   margin-bottom: 30px;
   background: var(--glass-bg);
   border: 1px solid var(--glass-border);
-  border-radius: 16px;
+  border-radius: var(--radius);
   padding: 24px;
-  transition: background 0.3s ease, border-color 0.3s ease;
+  transition: background var(--transition), border-color var(--transition);
   position: relative;
 }
 
@@ -283,7 +290,7 @@ h1 {
 
 .upload-area {
   border: 3px dashed var(--glass-border);
-  border-radius: 16px;
+  border-radius: var(--radius);
   padding: 40px;
   text-align: center;
   margin: 20px 0;
@@ -345,11 +352,11 @@ input[type="file"] {
 
 .album-item {
   border: 1px solid var(--glass-border);
-  border-radius: 16px;
+  border-radius: var(--radius);
   padding: 15px;
   background: var(--glass-bg);
   text-align: center;
-  transition: background 0.3s ease, border-color 0.3s ease;
+  transition: background var(--transition), border-color var(--transition);
 }
 
 .album-link:hover .album-item {
@@ -377,7 +384,7 @@ input[type="file"] {
   border: 1px solid rgba(76, 175, 80, 0.4);
   color: #4CAF50;
   padding: 8px 16px;
-  border-radius: 12px;
+  border-radius: calc(var(--radius) * 0.75);
   cursor: pointer;
   font-family: 'Montserrat', sans-serif;
   transition: all 0.2s ease;
@@ -398,7 +405,7 @@ input[type="file"] {
   border: 1px solid rgba(76, 175, 80, 0.4);
   color: #4CAF50;
   padding: 10px 20px;
-  border-radius: 12px;
+  border-radius: calc(var(--radius) * 0.75);
   cursor: pointer;
   font-family: 'Montserrat', sans-serif;
   transition: all 0.2s ease;
@@ -423,12 +430,12 @@ input[type="file"] {
 
 .image-item {
   border: 1px solid var(--glass-border);
-  border-radius: 16px;
+  border-radius: var(--radius);
   overflow: hidden;
   background: var(--glass-bg);
   display: flex;
   flex-direction: column;
-  transition: background 0.3s ease, border-color 0.3s ease;
+  transition: background var(--transition), border-color var(--transition);
   contain: layout style paint;
   /* CSS containment для производительности */
   min-height: 200px;
@@ -518,7 +525,7 @@ input[type="file"] {
   border: 1px solid rgba(33, 150, 243, 0.3);
   color: #2196F3;
   padding: 8px 16px;
-  border-radius: 12px;
+  border-radius: calc(var(--radius) * 0.75);
   cursor: pointer;
   font-family: 'Montserrat', sans-serif;
   transition: all 0.2s ease;
@@ -545,7 +552,7 @@ input[type="file"] {
   border: 1px solid rgba(255, 77, 77, 0.3);
   color: #ff4d4d;
   padding: 8px 16px;
-  border-radius: 12px;
+  border-radius: calc(var(--radius) * 0.75);
   cursor: pointer;
   font-family: 'Montserrat', sans-serif;
   transition: all 0.2s ease;
@@ -566,8 +573,8 @@ input[type="file"] {
   padding: 60px 20px;
   background: var(--glass-bg);
   border: 1px solid var(--glass-border);
-  border-radius: 16px;
-  transition: background 0.3s ease, border-color 0.3s ease;
+  border-radius: var(--radius);
+  transition: background var(--transition), border-color var(--transition);
 }
 
 .empty-state:hover {
@@ -592,7 +599,7 @@ input[type="file"] {
   border: 1px solid rgba(76, 175, 80, 0.4);
   color: #4CAF50;
   padding: 10px 20px;
-  border-radius: 12px;
+  border-radius: calc(var(--radius) * 0.75);
   cursor: pointer;
   font-family: 'Montserrat', sans-serif;
   transition: all 0.2s ease;
@@ -657,7 +664,7 @@ input[type="file"] {
 .upload-progress {
   background: var(--glass-bg);
   border: 1px solid var(--glass-border);
-  border-radius: 16px;
+  border-radius: var(--radius);
   padding: 40px;
   text-align: center;
 }
@@ -676,7 +683,7 @@ input[type="file"] {
   border: 2px solid var(--accent-color);
   border-radius: 50% 50% 45% 45%;
   position: relative;
-  animation: cat-jump 0.6s ease-in-out infinite alternate;
+  animation: cat-jump calc(0.6 * var(--anim-speed)) ease-in-out infinite alternate;
 }
 
 .cat-ear {
@@ -712,7 +719,7 @@ input[type="file"] {
   height: 8px;
   background: var(--accent-color);
   border-radius: 50%;
-  animation: cat-eye-roll 1.5s infinite linear;
+  animation: cat-eye-roll calc(1.5 * var(--anim-speed)) infinite linear;
 }
 
 .cat-mouth {
@@ -770,14 +777,21 @@ input[type="file"] {
 
 .footer {
   text-align: center;
-  padding: 20px;
+  padding: 40px 20px;
   margin-top: 20px;
   color: #666;
   font-size: 14px;
   position: static;
   width: 100%;
   z-index: 1;
-  display: block;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.footer-theme-selector {
+  margin-bottom: 20px;
 }
 
 .footer p {
@@ -830,7 +844,7 @@ input[type="file"] {
   border: 1px solid var(--glass-border);
   backdrop-filter: blur(var(--blur-val));
   -webkit-backdrop-filter: blur(var(--blur-val));
-  border-radius: 16px;
+  border-radius: var(--radius);
   padding: 16px 24px;
   margin: 20px auto;
   max-width: 800px;
@@ -921,7 +935,7 @@ input[type="file"] {
   border: 1px solid rgba(34, 211, 238, 0.3);
   color: #22d3ee;
   padding: 10px 20px;
-  border-radius: 12px;
+  border-radius: calc(var(--radius) * 0.75);
   text-decoration: none;
   font-size: 14px;
   font-weight: 600;
@@ -991,7 +1005,7 @@ input[type="file"] {
 .changelog-content {
   background: var(--bg-color);
   border: 1px solid var(--glass-border);
-  border-radius: 20px;
+  border-radius: calc(var(--radius) * 1.25);
   width: 100%;
   max-width: 600px;
   max-height: 80vh;
@@ -1090,7 +1104,7 @@ input[type="file"] {
   color: #000;
   border: none;
   padding: 12px 24px;
-  border-radius: 12px;
+  border-radius: calc(var(--radius) * 0.75);
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;

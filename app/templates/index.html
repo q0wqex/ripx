@@ -49,13 +49,7 @@
     <h1>ᴩиᴨиᴋᴄ ʀᴇʙᴏʀɴ</h1>
     <div class="header-actions">
       <p>жиʙой, дᴀжᴇ ᴋоᴦдᴀ ᴧᴇжиᴛ</p>
-      <div class="theme-switch-container">
-        <select id="themeSelect" class="theme-select" onchange="changeTheme(this.value)">
-          <option value="crystal">💎 ᴋᴩиᴄᴛᴀᴧᴧ</option>
-          <option value="simple">🌑 ᴨᴩоᴄᴛᴀя</option>
-          <option value="midnight">🌊 ᴨоᴧночь</option>
-          <option value="sunset">🌅 зᴀᴋᴀᴛ</option>
-        </select>
+      <div>
         <button type="button" class="delete-btn" onclick="deleteUser()">удᴀᴧиᴛь ᴨᴩоɸиᴧь</button>
       </div>
     </div>
@@ -126,6 +120,14 @@
   </div>
 
   <footer class="footer">
+    <div class="footer-theme-selector">
+      <select id="themeSelect" class="theme-select" onchange="changeTheme(this.value)">
+        <option value="crystal">💎 ᴋᴩиᴄᴛᴀᴧᴧ</option>
+        <option value="simple">🌑 ᴨᴩоᴄᴛᴀя</option>
+        <option value="midnight">🌊 ᴨоᴧночь</option>
+        <option value="sunset">🌅 зᴀᴋᴀᴛ</option>
+      </select>
+    </div>
     <p>ʙᴄᴇᴦо изобᴩᴀжᴇний нᴀ ᴄᴇᴩʙиᴄᴇ: {{.TotalImageCount}}</p>
     <p>ᴄʀᴇᴀᴛᴇᴅ ᴡɪᴛʜ ❤️ ʙʏ <a href="https://t.me/q0wqex" class="telegram-link">ǫ0ᴡǫᴇx</a></p>
     <p>ᴅᴇsɪɢɴ ɪɴsᴘɪʀᴇᴅ ʙʏ <a href="https://remna.st/" class="telegram-link">ʀᴇᴍɴᴀᴡᴀᴠᴇ</a></p>
