@@ -28,7 +28,34 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     });
   }
+
+  // Инициализация темы
+  initTheme();
 });
+
+// Функции для работы с темами
+function initTheme() {
+  const savedTheme = localStorage.getItem('ripx_theme') || 'crystal';
+  applyTheme(savedTheme);
+  
+  const themeSelect = document.getElementById('themeSelect');
+  if (themeSelect) {
+    themeSelect.value = savedTheme;
+  }
+}
+
+function changeTheme(themeName) {
+  applyTheme(themeName);
+  localStorage.setItem('ripx_theme', themeName);
+}
+
+function applyTheme(themeName) {
+  if (themeName === 'crystal') {
+    document.documentElement.removeAttribute('data-theme');
+  } else {
+    document.documentElement.setAttribute('data-theme', themeName);
+  }
+}
 
 // Показать индикатор загрузки
 function showUploadProgress(total) {

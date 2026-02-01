@@ -12,6 +12,70 @@
   size-adjust: 95%;
 }
 
+:root {
+  /* Default Theme (Crystal) */
+  --bg-color: #161b23;
+  --text-color: #c9d1d9;
+  --text-muted: #8b949e;
+  --accent-color: #22d3ee;
+  --accent-hover: #06b6d4;
+  --glass-bg: rgba(255, 255, 255, 0.02);
+  --glass-bg-hover: rgba(255, 255, 255, 0.04);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-border-hover: rgba(34, 211, 238, 0.3);
+  --blob-1: #9775fa;
+  --blob-2: #22d3ee;
+  --blur-val: 10px;
+  --card-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  --grid-color: rgba(128, 128, 128, 0.05);
+}
+
+[data-theme="simple"] {
+  --bg-color: #0d1117;
+  --text-color: #c9d1d9;
+  --text-muted: #6e7681;
+  --accent-color: #58a6ff;
+  --accent-hover: #1f6feb;
+  --glass-bg: #161b22;
+  --glass-bg-hover: #1c2128;
+  --glass-border: #30363d;
+  --glass-border-hover: #58a6ff;
+  --blob-1: transparent;
+  --blob-2: transparent;
+  --blur-val: 0px;
+  --card-shadow: none;
+}
+
+[data-theme="midnight"] {
+  --bg-color: #020617;
+  --text-color: #f1f5f9;
+  --text-muted: #94a3b8;
+  --accent-color: #38bdf8;
+  --accent-hover: #0ea5e9;
+  --glass-bg: rgba(15, 23, 42, 0.4);
+  --glass-bg-hover: rgba(15, 23, 42, 0.6);
+  --glass-border: rgba(56, 189, 248, 0.1);
+  --glass-border-hover: rgba(56, 189, 248, 0.4);
+  --blob-1: #1e40af;
+  --blob-2: #0ea5e9;
+  --blur-val: 12px;
+}
+
+[data-theme="sunset"] {
+  --bg-color: #1a0f0f;
+  --text-color: #ffe4e6;
+  --text-muted: #fda4af;
+  --accent-color: #fb7185;
+  --accent-hover: #f43f5e;
+  --glass-bg: rgba(251, 113, 133, 0.03);
+  --glass-bg-hover: rgba(251, 113, 133, 0.08);
+  --glass-border: rgba(251, 113, 133, 0.1);
+  --glass-border-hover: rgba(251, 113, 133, 0.4);
+  --blob-1: #9d174d;
+  --blob-2: #fb7185;
+  --blur-val: 10px;
+}
+
 html {
   box-sizing: border-box;
 }
@@ -23,15 +87,15 @@ html {
 }
 
 body {
-  background-color: #161b23;
+  background-color: var(--bg-color);
   /* Сетка на фоне */
   background-image:
-    linear-gradient(to right, rgba(128, 128, 128, 0.05) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(128, 128, 128, 0.05) 1px, transparent 1px);
+    linear-gradient(to right, var(--grid-color) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-color) 1px, transparent 1px);
   background-size: 60px;
   background-attachment: fixed;
   font-family: 'Montserrat', 'Montserrat-fallback', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
-  color: #c9d1d9;
+  color: var(--text-color);
   /* Светло-серый текст */
   margin: 0;
   padding: 0;
@@ -73,7 +137,7 @@ h1 {
   height: 500px;
   top: 10%;
   left: 10%;
-  background: radial-gradient(circle, #9775fa 0%, transparent 50%);
+  background: radial-gradient(circle, var(--blob-1) 0%, transparent 50%);
 }
 
 .blob-2 {
@@ -81,15 +145,15 @@ h1 {
   height: 600px;
   bottom: 10%;
   right: 10%;
-  background: radial-gradient(circle, #22d3ee 0%, transparent 50%);
+  background: radial-gradient(circle, var(--blob-2) 0%, transparent 50%);
 }
 
 .glass-card {
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(10px);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(var(--blur-val));
   /* Самое важное свойство */
-  -webkit-backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(var(--blur-val));
   /* Safari поддержка */
   border-radius: 16px;
   padding: 24px;
@@ -107,16 +171,47 @@ h1 {
 }
 
 .glass-card:hover {
-  background: rgba(255, 255, 255, 0.04);
-  border-color: rgba(34, 211, 238, 0.3);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  background: var(--glass-bg-hover);
+  border-color: var(--glass-border-hover);
+  box-shadow: var(--card-shadow);
 }
 
 .header-actions {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.theme-switch-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.theme-select {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  color: var(--text-color);
+  padding: 8px 12px;
+  border-radius: 12px;
+  font-family: 'Montserrat', sans-serif;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  outline: none;
+  font-size: 14px;
+}
+
+.theme-select:hover {
+  border-color: var(--glass-border-hover);
+  background: var(--glass-bg-hover);
+}
+
+.theme-select option {
+  background: var(--bg-color);
+  color: var(--text-color);
 }
 
 .inline-form {
@@ -133,8 +228,8 @@ h1 {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 30px;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
   border-radius: 16px;
   padding: 24px;
   transition: background 0.3s ease, border-color 0.3s ease;
@@ -142,8 +237,8 @@ h1 {
 }
 
 .header:hover {
-  background: rgba(255, 255, 255, 0.04);
-  border-color: rgba(34, 211, 238, 0.3);
+  background: var(--glass-bg-hover);
+  border-color: var(--glass-border-hover);
 }
 
 .header-side {
@@ -175,7 +270,7 @@ h1 {
 .header-main p {
   margin: 5px 0 0 0;
   font-size: 14px;
-  color: #8b949e;
+  color: var(--text-muted);
 }
 
 .header-side:last-child {
@@ -187,19 +282,19 @@ h1 {
 }
 
 .upload-area {
-  border: 3px dashed rgba(255, 255, 255, 0.2);
+  border: 3px dashed var(--glass-border);
   border-radius: 16px;
   padding: 40px;
   text-align: center;
   margin: 20px 0;
-  background: rgba(255, 255, 255, 0.02);
+  background: var(--glass-bg);
   cursor: pointer;
   transition: border-color 0.3s ease, background 0.3s ease;
 }
 
 .upload-area:hover {
-  border-color: rgba(34, 211, 238, 0.5);
-  background: rgba(255, 255, 255, 0.04);
+  border-color: var(--glass-border-hover);
+  background: var(--glass-bg-hover);
 }
 
 .upload-area.dragover {
@@ -249,17 +344,17 @@ input[type="file"] {
 }
 
 .album-item {
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--glass-border);
   border-radius: 16px;
   padding: 15px;
-  background: rgba(255, 255, 255, 0.02);
+  background: var(--glass-bg);
   text-align: center;
   transition: background 0.3s ease, border-color 0.3s ease;
 }
 
 .album-link:hover .album-item {
-  background: rgba(255, 255, 255, 0.04);
-  border-color: rgba(34, 211, 238, 0.3);
+  background: var(--glass-bg-hover);
+  border-color: var(--glass-border-hover);
 }
 
 .album-link {
@@ -327,10 +422,10 @@ input[type="file"] {
 }
 
 .image-item {
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--glass-border);
   border-radius: 16px;
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.02);
+  background: var(--glass-bg);
   display: flex;
   flex-direction: column;
   transition: background 0.3s ease, border-color 0.3s ease;
@@ -341,8 +436,8 @@ input[type="file"] {
 }
 
 .image-item:hover {
-  background: rgba(255, 255, 255, 0.04);
-  border-color: rgba(34, 211, 238, 0.3);
+  background: var(--glass-bg-hover);
+  border-color: var(--glass-border-hover);
 }
 
 .image-item img {
@@ -469,15 +564,15 @@ input[type="file"] {
 .empty-state {
   text-align: center;
   padding: 60px 20px;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
   border-radius: 16px;
   transition: background 0.3s ease, border-color 0.3s ease;
 }
 
 .empty-state:hover {
-  background: rgba(255, 255, 255, 0.04);
-  border-color: rgba(34, 211, 238, 0.3);
+  background: var(--glass-bg-hover);
+  border-color: var(--glass-border-hover);
 }
 
 .empty-icon {
@@ -560,8 +655,8 @@ input[type="file"] {
 }
 
 .upload-progress {
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
   border-radius: 16px;
   padding: 40px;
   text-align: center;
@@ -577,8 +672,8 @@ input[type="file"] {
 .cat-head {
   width: 100%;
   height: 100%;
-  background: rgba(34, 211, 238, 0.2);
-  border: 2px solid #22d3ee;
+  background: rgba(34, 211, 238, 0.1);
+  border: 2px solid var(--accent-color);
   border-radius: 50% 50% 45% 45%;
   position: relative;
   animation: cat-jump 0.6s ease-in-out infinite alternate;
@@ -587,8 +682,8 @@ input[type="file"] {
 .cat-ear {
   width: 25px;
   height: 25px;
-  background: rgba(34, 211, 238, 0.2);
-  border: 2px solid #22d3ee;
+  background: rgba(34, 211, 238, 0.1);
+  border: 2px solid var(--accent-color);
   position: absolute;
   top: -12px;
   border-radius: 5px;
@@ -615,7 +710,7 @@ input[type="file"] {
 .cat-eye {
   width: 8px;
   height: 8px;
-  background: #22d3ee;
+  background: var(--accent-color);
   border-radius: 50%;
   animation: cat-eye-roll 1.5s infinite linear;
 }
@@ -623,7 +718,7 @@ input[type="file"] {
 .cat-mouth {
   width: 14px;
   height: 7px;
-  border-bottom: 2px solid #22d3ee;
+  border-bottom: 2px solid var(--accent-color);
   border-radius: 0 0 12px 12px;
   margin: 6px auto;
 }
@@ -731,10 +826,10 @@ input[type="file"] {
 
 /* Стили для рекламного баннера VPN */
 .promo-banner {
-  background: rgba(34, 211, 238, 0.03);
-  border: 1px solid rgba(34, 211, 238, 0.15);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(var(--blur-val));
+  -webkit-backdrop-filter: blur(var(--blur-val));
   border-radius: 16px;
   padding: 16px 24px;
   margin: 20px auto;
@@ -751,9 +846,9 @@ input[type="file"] {
 }
 
 .promo-banner:hover {
-  background: rgba(34, 211, 238, 0.06);
-  border-color: rgba(34, 211, 238, 0.4);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  background: var(--glass-bg-hover);
+  border-color: var(--glass-border-hover);
+  box-shadow: var(--card-shadow);
 }
 
 .promo-content {
@@ -894,8 +989,8 @@ input[type="file"] {
 }
 
 .changelog-content {
-  background: rgba(22, 27, 35, 0.95);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--bg-color);
+  border: 1px solid var(--glass-border);
   border-radius: 20px;
   width: 100%;
   max-width: 600px;
@@ -937,10 +1032,10 @@ input[type="file"] {
   padding: 30px;
   padding-right: 36px;
   overflow-y: auto;
-  color: #c9d1d9;
+  color: var(--text-color);
   line-height: 1.6;
   scrollbar-width: thin;
-  scrollbar-color: rgba(34, 211, 238, 0.4) transparent;
+  scrollbar-color: var(--accent-color) transparent;
 }
 
 .changelog-body::-webkit-scrollbar {
@@ -952,12 +1047,12 @@ input[type="file"] {
 }
 
 .changelog-body::-webkit-scrollbar-thumb {
-  background: rgba(34, 211, 238, 0.2);
+  background: var(--glass-border);
   border-radius: 10px;
 }
 
 .changelog-body::-webkit-scrollbar-thumb:hover {
-  background: rgba(34, 211, 238, 0.4);
+  background: var(--accent-color);
 }
 
 .changelog-body h2,
@@ -991,7 +1086,7 @@ input[type="file"] {
 }
 
 .close-changelog-btn {
-  background: #22d3ee;
+  background: var(--accent-color);
   color: #000;
   border: none;
   padding: 12px 24px;
@@ -1003,9 +1098,9 @@ input[type="file"] {
 }
 
 .close-changelog-btn:hover {
-  background: #06b6d4;
+  background: var(--accent-hover);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(34, 211, 238, 0.3);
+  box-shadow: 0 4px 12px var(--glass-border-hover);
 }
 
 @media (max-width: 480px) {

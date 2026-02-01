@@ -49,8 +49,13 @@
     <h1>ᴩиᴨиᴋᴄ ʀᴇʙᴏʀɴ</h1>
     <div class="header-actions">
       <p>жиʙой, дᴀжᴇ ᴋоᴦдᴀ ᴧᴇжиᴛ</p>
-      <div>
-
+      <div class="theme-switch-container">
+        <select id="themeSelect" class="theme-select" onchange="changeTheme(this.value)">
+          <option value="crystal">💎 ᴋᴩиᴄᴛᴀᴧᴧ</option>
+          <option value="simple">🌑 ᴨᴩоᴄᴛᴀя</option>
+          <option value="midnight">🌊 ᴨоᴧночь</option>
+          <option value="sunset">🌅 зᴀᴋᴀᴛ</option>
+        </select>
         <button type="button" class="delete-btn" onclick="deleteUser()">удᴀᴧиᴛь ᴨᴩоɸиᴧь</button>
       </div>
     </div>
